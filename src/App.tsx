@@ -9,7 +9,7 @@ import { Highlights } from "./sections/Highlights";
 import { Join } from "./sections/Join";
 import { SiteFooter } from "./sections/SiteFooter";
 import { StatsStrip } from "./sections/StatsStrip";
-import { SpiralGallery } from "./components/SpiralGallery";
+import InfiniteSpiral from "./components/InfiniteSpiral";
 import { WhyJoin } from "./sections/WhyJoin";
 import { works } from "./config/site";
 
@@ -34,7 +34,24 @@ export default function App() {
         <WhyJoin />
         <Highlights />
         <Activities />
-        <SpiralGallery items={works} />
+        <InfiniteSpiral
+          items={works.map((w) => ({
+            src: w.src!,
+            alt: w.caption ?? w.hint,
+            label: w.caption ?? w.title,
+          }))}
+          animationMode="scroll"
+          direction="up"
+          cardsPerTurn={6}
+          radius={260}
+          verticalSpacing={140}
+          centerScale={1.3}
+          edgeFade={0.35}
+          edgeBlur={5}
+          cardWidth={220}
+          cardHeight={280}
+          pauseOnHover
+        />
         <Faq />
         <Join />
       </main>
