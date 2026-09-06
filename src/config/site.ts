@@ -54,7 +54,7 @@ export const heroSlides: string[] = [
 /* ── 首屏背景音乐（可选）──
  * 放一首循环纯音乐到 public/audio/bgm.mp3（建议 ≤1MB），
  * 然后把 null 改成 "/audio/bgm.mp3"，首屏右下角喇叭按钮即自动生效（记住用户偏好）。 */
-export const heroMusic: string | null = null;
+export const heroMusic: string | null = "/audio/bgm.mp3";
 
 /* ── 数字带（数据来源：社团官方抖音主页，2026-09 截图，真实数据） ── */
 

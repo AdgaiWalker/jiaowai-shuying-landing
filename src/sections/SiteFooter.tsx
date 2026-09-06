@@ -10,6 +10,9 @@ export function SiteFooter() {
           {site.school} · 指导单位与免责声明待填
         </p>
         <p className="mt-1 text-xs text-faint">© {new Date().getFullYear()} {site.name}</p>
+        <p className="mt-1 text-[11px] text-faint">
+          BGM: "That Zen Moment" by Kevin MacLeod (incompetech.com) — licensed under CC BY
+        </p>
       </div>
     </footer>
   );
