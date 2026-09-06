@@ -1,11 +1,11 @@
 import { Reveal } from "../components/Reveal";
 import { SeasonCarousel } from "../components/SeasonCarousel";
 import { SectionTitle } from "../components/SectionTitle";
+import { TypeMarquee } from "../components/TypeMarquee";
 import { activityTypes, seasons } from "../config/site";
 
 /**
- * S6 黑河四季：自动轮播展示四季系列作品（5 秒换帧，可拖拽/跳帧），
- * 活动类型以文字标签呈现（活动纪实照片待补，到位后可并入轮播素材）。
+ * S6 黑河四季：活动类型跑马灯（自动从左向右漂移）+ 四季作品自动轮播（5 秒换帧）。
  */
 export function Activities() {
   return (
@@ -18,13 +18,9 @@ export function Activities() {
           />
         </Reveal>
         <Reveal>
-          <ul className="mb-8 flex flex-wrap gap-2" aria-label="活动类型">
-            {activityTypes.map((t) => (
-              <li key={t} className="border border-line px-3 py-1 text-xs text-muted">
-                {t}
-              </li>
-            ))}
-          </ul>
+          <div className="mb-8">
+            <TypeMarquee items={activityTypes} />
+          </div>
         </Reveal>
       </div>
       <Reveal>

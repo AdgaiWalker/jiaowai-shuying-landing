@@ -99,3 +99,24 @@ details .faq-icon {
 details[open] .faq-icon {
   transform: rotate(45deg);
 }
+
+/* 活动类型跑马灯：内容复制一份，translateX -50%→0 实现从左至右无缝漂移 */
+@keyframes marqueeRight {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+.marquee-track {
+  animation: marqueeRight 28s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+  .marquee-copy {
+    display: none;
+  }
+}
