@@ -9,8 +9,9 @@ import { Highlights } from "./sections/Highlights";
 import { Join } from "./sections/Join";
 import { SiteFooter } from "./sections/SiteFooter";
 import { StatsStrip } from "./sections/StatsStrip";
-import { Works } from "./sections/Works";
+import { SpiralGallery } from "./components/SpiralGallery";
 import { WhyJoin } from "./sections/WhyJoin";
+import { works } from "./config/site";
 
 export default function App() {
   // 直链带锚点（如 /#join）时，等 React 渲染完成再滚动到位
@@ -33,7 +34,7 @@ export default function App() {
         <WhyJoin />
         <Highlights />
         <Activities />
-        <Works />
+        <SpiralGallery items={works} />
         <Faq />
         <Join />
       </main>
