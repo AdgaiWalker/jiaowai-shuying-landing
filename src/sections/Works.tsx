@@ -1,4 +1,5 @@
 import { useState } from "react";
+import GlareHover from "../components/GlareHover";
 import { InlineVideo } from "../components/InlineVideo";
 import { Lightbox } from "../components/Lightbox";
 import { PhotoSlot } from "../components/PhotoSlot";
@@ -32,7 +33,9 @@ export function Works() {
                   aria-label={`查看大图：${w.caption ?? w.hint}`}
                   className="block w-full cursor-zoom-in"
                 >
-                  <PhotoSlot spec={w} />
+                  <GlareHover glareColor="#f4f4f1" glareOpacity={0.25} transitionDuration={800}>
+                    <PhotoSlot spec={w} />
+                  </GlareHover>
                 </button>
               ) : (
                 <PhotoSlot spec={w} />

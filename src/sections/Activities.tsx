@@ -1,3 +1,4 @@
+import GlareHover from "../components/GlareHover";
 import { PhotoSlot } from "../components/PhotoSlot";
 import { Reveal } from "../components/Reveal";
 import { SectionTitle } from "../components/SectionTitle";
@@ -32,7 +33,13 @@ export function Activities() {
           <ul className="mx-auto flex w-max gap-4 px-4 md:gap-6 md:px-[max(1.5rem,calc((100vw-72rem)/2+1.5rem))]">
             {seasons.map((s) => (
               <li key={s.name} className="w-[260px] shrink-0 snap-start md:w-[320px]">
-                <PhotoSlot spec={s.photo} />
+                <GlareHover
+                  glareColor="#f4f4f1"
+                  glareOpacity={0.22}
+                  transitionDuration={800}
+                >
+                  <PhotoSlot spec={s.photo} />
+                </GlareHover>
                 <h3 className="mt-3 font-serif text-base">{s.name}</h3>
                 <p className="mt-1 text-xs leading-relaxed text-muted">{s.desc}</p>
               </li>

@@ -1,3 +1,6 @@
+import { useReducedMotion } from "motion/react";
+import ScrollStack, { ScrollStackItem } from "../components/ScrollStack";
+
 /** 「来焦述」清单：能得到什么，一条条摆明（第 1 条学分政策待社长确认） */
 const items = [
   { need: "学分不够", detail: "社团活动计综测学分，具体规则进群就有人告诉你。" },
@@ -8,12 +11,24 @@ const items = [
   { need: "怕没舞台", detail: "校报署名、官方平台、省级转发，等你来上。" },
 ];
 
+/** 单条口号：红色 = 你的需求，灰色「来焦述」= 固定应答（清单/卡片两种形态共用） */
+function Slogan({ need }: { need: string }) {
+  return (
+    <p className="font-serif text-2xl font-medium md:text-3xl">
+      <span className="text-accent">{need}</span>
+      <span className="text-muted">，来焦述。</span>
+    </p>
+  );
+}
+
 /**
  * S4 为什么加入：「XX，来焦述」口号式清单。
- * 红色 = 你的需求，灰色「来焦述」= 固定应答，节奏感即记忆点；
- * 说明行全部来自已核实的真实背书，无编造。
+ * 默认形态为卡片堆叠滚动（越压越深，被盖住的卡片轻微失焦——景深），
+ * 「减弱动态」时回退为静态清单。说明行全部来自已核实的真实背书，无编造。
  */
 export function WhyJoin() {
+  const reduce = useReducedMotion() ?? false;
+
   return (
     <section id="why" className="bg-ink-soft py-20 md:py-28">
       <div className="mx-auto max-w-4xl px-4 md:px-6">
@@ -21,18 +36,34 @@ export function WhyJoin() {
         <p className="mt-3 text-sm leading-relaxed text-muted">
           学分、氛围、技术、设备、舞台，按需自取。
         </p>
-        <div className="mt-10 md:mt-14">
+      </div>
+
+      {reduce ? (
+        <div className="mx-auto mt-10 max-w-4xl px-4 md:mt-14 md:px-6">
           {items.map((item, i) => (
             <div key={item.need} className={`py-9 md:py-11 ${i > 0 ? "border-t border-line" : ""}`}>
-              <p className="font-serif text-2xl font-medium md:text-3xl">
-                <span className="text-accent">{item.need}</span>
-                <span className="text-muted">，来焦述。</span>
-              </p>
+              <Slogan need={item.need} />
               <p className="mt-3 text-sm leading-relaxed text-muted md:text-base">{item.detail}</p>
             </div>
           ))}
         </div>
-      </div>
+      ) : (
+        <div className="mx-auto mt-10 max-w-4xl px-4 md:px-6">
+          <ScrollStack>
+            {items.map((item) => (
+              <ScrollStackItem
+                key={item.need}
+                itemClassName="h-72 md:h-80 rounded-none border border-line bg-ink shadow-[0_24px_48px_-24px_rgba(0,0,0,0.6)]"
+              >
+                <div className="flex h-full flex-col justify-center p-6 md:p-10">
+                  <Slogan need={item.need} />
+                  <p className="mt-3 text-sm leading-relaxed text-muted md:text-base">{item.detail}</p>
+                </div>
+              </ScrollStackItem>
+            ))}
+          </ScrollStack>
+        </div>
+      )}
     </section>
   );
 }

@@ -1,3 +1,5 @@
+import { useReducedMotion } from "motion/react";
+import BlurText from "../components/BlurText";
 import { HeroCarousel } from "../components/HeroCarousel";
 import { Reveal } from "../components/Reveal";
 import { heroSlides, site } from "../config/site";
@@ -6,9 +8,12 @@ import { heroSlides, site } from "../config/site";
  * S1 首屏：品牌印象 + 主转化。
  * 文案栈固定四件事：眉标、标题、一句话定位、两个按钮。
  * 有轮播图时全幅铺底加压暗渐层；无图时显示素材占位框，焦外光斑做氛围底。
+ * 标题 = 逐字上浮（片头字卡），slogan = 逐字由虚转实（对焦），两者互为呼应；
+ * 「减弱动态」时全部退化为静态文本。
  */
 export function Hero() {
   const hasSlides = heroSlides.length > 0;
+  const reduce = useReducedMotion() ?? false;
 
   return (
     <section id="top" className="relative flex min-h-[100dvh] flex-col overflow-hidden">
@@ -37,10 +42,37 @@ export function Hero() {
       <div className="relative z-10 mx-auto mt-auto w-full max-w-6xl px-4 pb-24 pt-16 md:px-6 md:pb-28">
         <Reveal>
           <p className="text-xs tracking-[0.25em] text-muted">{site.eyebrow}</p>
+        </Reveal>
+        {reduce ? (
           <h1 className="mt-4 font-serif text-6xl font-semibold leading-[1.05] md:text-8xl">
             {site.name}
           </h1>
+        ) : (
+          <BlurText
+            text={site.name}
+            tag="h1"
+            animateBy="letters"
+            delay={140}
+            stepDuration={0.9}
+            animationFrom={{ opacity: 0, y: 56 }}
+            animationTo={[{ opacity: 1, y: 0 }]}
+            easing={[0.16, 1, 0.3, 1]}
+            className="mt-4 font-serif text-6xl font-semibold leading-[1.05] md:text-8xl"
+          />
+        )}
+        {reduce ? (
           <p className="mt-4 font-serif text-lg text-paper/90 md:text-xl">{site.slogan}</p>
+        ) : (
+          <BlurText
+            text={site.slogan}
+            animateBy="letters"
+            direction="bottom"
+            delay={80}
+            stepDuration={0.45}
+            className="mt-4 font-serif text-lg text-paper/90 md:text-xl"
+          />
+        )}
+        <Reveal delay={0.15}>
           <div className="mt-8 flex flex-wrap gap-3">
             <a
               href="#join"
