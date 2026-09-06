@@ -49,15 +49,15 @@ export function WhyJoin() {
         </div>
       ) : (
         <div className="mx-auto mt-10 max-w-4xl px-4 md:px-6">
-          <ScrollStack>
+          <ScrollStack itemDistance={32} itemStackDistance={16}>
             {items.map((item) => (
               <ScrollStackItem
                 key={item.need}
-                itemClassName="h-72 md:h-80 rounded-none border border-line bg-ink shadow-[0_24px_48px_-24px_rgba(0,0,0,0.6)]"
+                itemClassName="h-56 md:h-64 rounded-none border border-line bg-ink shadow-[0_24px_48px_-24px_rgba(0,0,0,0.6)]"
               >
-                <div className="flex h-full flex-col justify-center p-6 md:p-10">
+                <div className="flex h-full flex-col justify-center p-5 md:p-8">
                   <Slogan need={item.need} />
-                  <p className="mt-3 text-sm leading-relaxed text-muted md:text-base">{item.detail}</p>
+                  <p className="mt-2.5 text-sm leading-relaxed text-muted md:text-base">{item.detail}</p>
                 </div>
               </ScrollStackItem>
             ))}

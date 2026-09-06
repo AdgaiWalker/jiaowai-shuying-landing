@@ -52,9 +52,9 @@ interface ScrollStackProps {
 const ScrollStack: React.FC<ScrollStackProps> = ({
   children,
   className = '',
-  itemDistance = 70,
+  itemDistance = 32,
   itemScale = 0.012,
-  itemStackDistance = 24,
+  itemStackDistance = 16,
   stackPosition = '18%',
   scaleEndPosition = '10%',
   baseScale = 0.925,
@@ -230,7 +230,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
   return (
     <div className={`relative w-full ${className}`.trim()} ref={rootRef}>
-      <div className="scroll-stack-inner pt-[14vh] pb-[32vh]">
+      <div className="scroll-stack-inner pt-[10vh] pb-[24vh]">
         {children}
         {/* 尾部占位：让最后一张卡片也能短暂停住再随页面滚走 */}
         <div className="scroll-stack-end w-full h-px" />
