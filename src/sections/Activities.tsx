@@ -1,12 +1,11 @@
-import GlareHover from "../components/GlareHover";
-import { PhotoSlot } from "../components/PhotoSlot";
 import { Reveal } from "../components/Reveal";
+import { SeasonCarousel } from "../components/SeasonCarousel";
 import { SectionTitle } from "../components/SectionTitle";
 import { activityTypes, seasons } from "../config/site";
 
 /**
- * S6 黑河四季：横滑照片条（scroll-snap）展示四季系列作品；
- * 活动类型暂以文字标签呈现（活动纪实照片待补，到位后升级为图文卡）。
+ * S6 黑河四季：自动轮播展示四季系列作品（5 秒换帧，可拖拽/跳帧），
+ * 活动类型以文字标签呈现（活动纪实照片待补，到位后可并入轮播素材）。
  */
 export function Activities() {
   return (
@@ -29,23 +28,7 @@ export function Activities() {
         </Reveal>
       </div>
       <Reveal>
-        <div className="no-scrollbar snap-x snap-mandatory overflow-x-auto">
-          <ul className="mx-auto flex w-max gap-4 px-4 md:gap-6 md:px-[max(1.5rem,calc((100vw-72rem)/2+1.5rem))]">
-            {seasons.map((s) => (
-              <li key={s.name} className="w-[260px] shrink-0 snap-start md:w-[320px]">
-                <GlareHover
-                  glareColor="#f4f4f1"
-                  glareOpacity={0.22}
-                  transitionDuration={800}
-                >
-                  <PhotoSlot spec={s.photo} />
-                </GlareHover>
-                <h3 className="mt-3 font-serif text-base">{s.name}</h3>
-                <p className="mt-1 text-xs leading-relaxed text-muted">{s.desc}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <SeasonCarousel seasons={seasons} />
       </Reveal>
     </section>
   );
