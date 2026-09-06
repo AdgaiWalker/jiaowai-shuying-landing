@@ -119,4 +119,12 @@ details[open] .faq-icon {
   .marquee-copy {
     display: none;
   }
+  /* 减弱动态：跑马灯退化为可横滑的静态条 */
+  .marquee {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .marquee::-webkit-scrollbar {
+    display: none;
+  }
 }

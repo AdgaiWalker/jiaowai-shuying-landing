@@ -1,11 +1,11 @@
 import { Reveal } from "../components/Reveal";
-import { SeasonCarousel } from "../components/SeasonCarousel";
+import { SeasonMarquee } from "../components/SeasonMarquee";
 import { SectionTitle } from "../components/SectionTitle";
 import { TypeMarquee } from "../components/TypeMarquee";
 import { activityTypes, seasons } from "../config/site";
 
 /**
- * S6 黑河四季：活动类型跑马灯（自动从左向右漂移）+ 四季作品自动轮播（5 秒换帧）。
+ * S6 黑河四季：活动类型跑马灯 + 四季照片带（自动从左向右漂移，一张接一张晃过去）。
  */
 export function Activities() {
   return (
@@ -24,7 +24,7 @@ export function Activities() {
         </Reveal>
       </div>
       <Reveal>
-        <SeasonCarousel seasons={seasons} />
+        <SeasonMarquee seasons={seasons} />
       </Reveal>
     </section>
   );
