@@ -1,0 +1,101 @@
+@import "tailwindcss";
+/* 思源宋体（可变字重），按 unicode-range 分包，浏览器只下载页面用到的子集 */
+@import "@fontsource-variable/noto-serif-sc";
+
+/*
+ * ═══ 设计令牌 · 暗夜胶片 · 炭灰冷调 ═══
+ * 页面锁定深色单一主题（品牌方向即「暗夜胶片」，不做明暗切换）。
+ * 中性炭黑底（不带黄褐倾向，让照片自身决定冷暖）+ 暖白文字
+ * + 唯一摄影红点缀（致意 Leica / Kodak 的红，只用于 CTA 与强调）。
+ * 全部直角（胶片印刷感），无圆角。
+ */
+@theme {
+  --color-ink: #101113; /* 页面底色：中性炭黑，不用纯黑 */
+  --color-ink-soft: #17181c; /* 分区底 / 卡片底 */
+  --color-ink-lift: #1e2024; /* 悬浮层 */
+  --color-line: #272a30; /* 发丝分隔线 */
+  --color-paper: #f4f4f1; /* 主文字：暖白 */
+  --color-muted: #a2a7b0; /* 次级文字 */
+  --color-faint: #62676f; /* 弱化文字 / 占位描边 */
+  --color-accent: #e5484d; /* 唯一点缀色：摄影红 */
+  --color-accent-deep: #b23a3e; /* 红深阶 */
+
+  --font-serif: "Noto Serif SC Variable", "Songti SC", "STSong", "SimSun", serif; /* 标题衬线 */
+  --font-sans: "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Microsoft YaHei", system-ui, sans-serif; /* 正文系统黑体 */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 胶片颗粒：固定层 + pointer-events-none，避免滚动容器反复重绘拖垮移动端帧率 */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* 焦外光斑：Hero 无图时的氛围底，中性光斑带一点红 */
+.bokeh {
+  background:
+    radial-gradient(circle at 18% 24%, rgb(244 244 241 / 0.1) 0 88px, transparent 170px),
+    radial-gradient(circle at 76% 14%, rgb(229 72 77 / 0.1) 0 56px, transparent 120px),
+    radial-gradient(circle at 64% 66%, rgb(160 165 175 / 0.1) 0 104px, transparent 190px),
+    radial-gradient(circle at 10% 80%, rgb(244 244 241 / 0.06) 0 66px, transparent 130px);
+  filter: blur(26px);
+}
+
+/* 首屏轮播的缓慢缩放（Ken Burns），减弱动态时关闭 */
+@keyframes heroZoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+.hero-zoom {
+  animation: heroZoom 7s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-zoom {
+    animation: none;
+  }
+}
+
+/* 首屏电影暗角：镜头边缘的自然失光 */
+.hero-vignette {
+  background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(16 17 19 / 0.5) 100%);
+}
+
+/* 横滑照片条的隐藏滚动条 */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+/* FAQ 展开指示图标随开合旋转 */
+details .faq-icon {
+  transition: transform 0.2s ease;
+}
+details[open] .faq-icon {
+  transform: rotate(45deg);
+}
