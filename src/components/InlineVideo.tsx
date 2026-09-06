@@ -1,14 +1,16 @@
-import { SpeakerHigh, SpeakerSlash } from "@phosphor-icons/react";
+import { SpeakerHigh, SpeakerSlash, ArrowsOutSimple } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
+import { Lightbox } from "./Lightbox";
 import { featuredVideo } from "../config/site";
 
 /**
  * 精选短片内联播放：微信内置浏览器要求静音 + playsinline 才能自动起播，
- * 默认静音循环，点击按钮开声。无视频素材时显示规格标注的占位框。
+ * 默认静音循环，点击按钮开声。右下角「放大」按钮可全屏查看（Lightbox）。
  */
 export function InlineVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const toggleMute = () => {
     const v = videoRef.current;
@@ -34,34 +36,51 @@ export function InlineVideo() {
   }
 
   return (
-    <div className="relative border border-line bg-ink-soft">
-      <video
-        ref={(el) => {
-          // React 对 muted 属性的历史问题：插入 DOM 前显式置静音，保证微信内自动起播
-          if (el) el.muted = true;
-          videoRef.current = el;
-        }}
-        src={featuredVideo.video}
-        poster={featuredVideo.poster ?? undefined}
-        muted={muted}
-        loop
-        autoPlay
-        playsInline
-        preload="metadata"
-        className="aspect-video w-full object-cover"
+    <>
+      <div className="relative border border-line bg-ink-soft">
+        <video
+          ref={(el) => {
+            if (el) el.muted = true;
+            videoRef.current = el;
+          }}
+          src={featuredVideo.video}
+          poster={featuredVideo.poster ?? undefined}
+          muted={muted}
+          loop
+          autoPlay
+          playsInline
+          preload="metadata"
+          className="aspect-video w-full object-cover"
+        />
+        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(true)}
+            aria-label="全屏查看视频"
+            className="flex size-10 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur"
+          >
+            <ArrowsOutSimple size={18} weight="regular" aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={toggleMute}
+            aria-label={muted ? "开启声音" : "静音"}
+            className="flex size-10 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur"
+          >
+            {muted ? (
+              <SpeakerSlash size={18} weight="regular" aria-hidden />
+            ) : (
+              <SpeakerHigh size={18} weight="regular" aria-hidden />
+            )}
+          </button>
+        </div>
+      </div>
+      <Lightbox
+        items={[{ src: featuredVideo.video, type: "video", caption: "动态影像作品", hint: featuredVideo.hint }]}
+        index={lightboxOpen ? 0 : null}
+        onClose={() => setLightboxOpen(false)}
+        onNavigate={() => {}}
       />
-      <button
-        type="button"
-        onClick={toggleMute}
-        aria-label={muted ? "开启声音" : "静音"}
-        className="absolute bottom-3 right-3 flex size-10 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur"
-      >
-        {muted ? (
-          <SpeakerSlash size={18} weight="regular" aria-hidden />
-        ) : (
-          <SpeakerHigh size={18} weight="regular" aria-hidden />
-        )}
-      </button>
-    </div>
+    </>
   );
 }

@@ -3,12 +3,12 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import type { PhotoSpec } from "../config/site";
 
-/**
- * 作品灯箱：点击作品全屏查看，左右滑动 / 方向键 / 按钮切换，Esc 关闭。
- * 只在有真实图片（src 非空）的作品上触发。
- */
+type LightboxItem =
+  | { type: "video"; src: string; poster?: string; caption?: string; hint?: string }
+  | PhotoSpec;
+
 type Props = {
-  items: PhotoSpec[];
+  items: LightboxItem[];
   index: number | null;
   onClose: () => void;
   onNavigate: (index: number) => void;
@@ -41,13 +41,27 @@ export function Lightbox({ items, index, onClose, onNavigate }: Props) {
     onNavigate((index + dir + items.length) % items.length);
   };
 
+  const isVideo = (item: LightboxItem): boolean => {
+    return "type" in item && item.type === "video";
+  };
+
+  const label = (item: LightboxItem): string => {
+    if ("type" in item && item.type === "video") return item.caption ?? item.hint ?? "";
+    const photo = item as PhotoSpec;
+    return photo.caption ?? photo.title;
+  };
+  const hint = (item: LightboxItem): string => {
+    if ("type" in item && item.type === "video") return item.hint ?? "";
+    return item.hint ?? "";
+  };
+
   return (
     <AnimatePresence>
       {item && item.src && (
         <motion.div
           role="dialog"
           aria-modal="true"
-          aria-label={item.caption ?? item.title}
+          aria-label={label(item)}
           className="fixed inset-0 z-50 flex touch-pan-y flex-col bg-ink/95"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -94,20 +108,35 @@ export function Lightbox({ items, index, onClose, onNavigate }: Props) {
           )}
 
           <div className="flex flex-1 items-center justify-center overflow-hidden p-4 md:p-10" onClick={onClose}>
-            <motion.img
-              key={index}
-              src={item.src}
-              alt={item.caption ?? item.hint}
-              className="max-h-full max-w-full object-contain"
-              initial={{ opacity: 0, scale: 0.985 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              onClick={(e) => e.stopPropagation()}
-            />
+            {isVideo(item) ? (
+              <motion.video
+                key={index}
+                src={item.src}
+                poster={"poster" in item ? item.poster : undefined}
+                className="max-h-full max-w-full"
+                initial={{ opacity: 0, scale: 0.985 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                controls
+                autoPlay
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <motion.img
+                key={index}
+                src={item.src}
+                alt={label(item)}
+                className="max-h-full max-w-full object-contain"
+                initial={{ opacity: 0, scale: 0.985 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
           </div>
           <div className="border-t border-line px-4 py-3 text-center">
-            <p className="font-serif text-sm text-paper">{item.caption ?? item.title}</p>
-            <p className="mt-0.5 text-[11px] text-faint">{item.hint}</p>
+            <p className="font-serif text-sm text-paper">{label(item)}</p>
+            <p className="mt-0.5 text-[11px] text-faint">{hint(item)}</p>
           </div>
         </motion.div>
       )}
