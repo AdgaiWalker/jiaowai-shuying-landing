@@ -5,26 +5,26 @@ import type { PhotoSpec } from "../config/site";
 
 type SpiralGalleryProps = {
   items: PhotoSpec[];
-  /** 滚动驱动的圈数，默认 3 圈（对应 3 屏高度） */
+  /** 螺旋圈数，默认 3 圈 */
   turns?: number;
-  /** 螺旋最大半径（px） */
-  maxRadius?: number;
-  /** 垂直落差（px） */
+  /** 螺旋半径（px） */
+  radius?: number;
+  /** 垂直总落差（px） */
   pitch?: number;
 };
 
 /**
- * 滚动驱动螺旋画廊：
- * - 进入视口后固定镜头（sticky），随滚动螺旋流动展示图片
- * - 滚动继续向下时自然离开，不影响后续内容
- * - 基于 CSS perspective + transform-style: preserve-3d
- * - 支持点击灯箱放大
+ * 垂直螺旋画廊：
+ * - 图片沿垂直螺旋线分布（像螺旋楼梯/ DNA 双螺旋）
+ * - 滚动驱动螺旋旋转，图片沿轨道循环流动
+ * - 始终只有当前图片在中心高亮，其余在螺旋臂上虚化
+ * - 固定镜头 sticky，滚完后自然离开
  */
 export function SpiralGallery({
   items,
   turns = 3,
-  maxRadius = 480,
-  pitch = 160,
+  radius = 280,
+  pitch = 900,
 }: SpiralGalleryProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
@@ -33,21 +33,20 @@ export function SpiralGallery({
 
   if (valid.length === 0) return null;
 
-  // 监听滚动，计算 0~1 进度
+  // 滚动驱动：0~1 进度映射到螺旋旋转角度
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
 
     const onScroll = () => {
       const rect = section.getBoundingClientRect();
-      const sectionTop = rect.top;
-      const sectionHeight = rect.height;
       const viewportHeight = window.innerHeight;
+      const sectionHeight = rect.height;
 
       // 当 section 顶部到达视口底部时开始，section 底部到达视口顶部时结束
       const start = viewportHeight;
       const end = -sectionHeight + viewportHeight;
-      const current = sectionTop;
+      const current = rect.top;
 
       if (current <= start && current >= end) {
         const p = (start - current) / (start - end);
@@ -60,22 +59,21 @@ export function SpiralGallery({
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll(); // 初始调用
+    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // 根据进度计算当前展示的图片
-  const currentIndex = Math.floor(progress * valid.length) % valid.length;
-  const currentItem = valid[currentIndex];
+  // 当前高亮图片索引（循环）
+  const activeIndex = Math.floor(progress * valid.length) % valid.length;
 
   return (
     <section ref={sectionRef} className="relative" style={{ height: `${valid.length * 100}vh` }}>
-      {/* 固定镜头区域 */}
+      {/* 固定镜头 */}
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* 背景渐变 */}
+        {/* 背景 */}
         <div className="absolute inset-0 bg-gradient-to-b from-ink via-ink-soft to-ink" />
 
-        {/* 螺旋图片 */}
+        {/* 螺旋容器 */}
         <div
           className="absolute inset-0 flex items-center justify-center"
           style={{ perspective: 1200, perspectiveOrigin: "50% 50%" }}
@@ -84,36 +82,36 @@ export function SpiralGallery({
             className="relative"
             style={{
               transformStyle: "preserve-3d",
-              transform: "rotateX(8deg)",
+              transform: "rotateX(0deg)",
             }}
           >
             {valid.map((item, i) => {
-              // 计算该图片在螺旋中的基础角度
+              // 垂直螺旋：角度沿圈数分布，y 从 -pitch/2 到 +pitch/2
               const baseAngle = (i / valid.length) * turns * Math.PI * 2;
-              // 加上滚动进度带来的旋转
-              const angle = baseAngle + progress * turns * Math.PI * 2;
-              const radius = maxRadius * (i / Math.max(1, valid.length - 1));
-              const x = Math.cos(angle) * radius;
-              const z = Math.sin(angle) * radius;
               const y = (i / valid.length) * pitch - pitch / 2;
-              const scale = 0.6 + 0.4 * (i / Math.max(1, valid.length - 1));
+
+              // 滚动驱动：整个螺旋旋转
+              const scrollAngle = baseAngle + progress * turns * Math.PI * 2;
+              const finalX = Math.cos(scrollAngle) * radius;
+              const finalZ = Math.sin(scrollAngle) * radius;
 
               // 当前图片高亮
-              const isActive = i === currentIndex;
-              const opacity = isActive ? 1 : 0.4;
-              const activeScale = isActive ? scale * 1.1 : scale;
+              const isActive = i === activeIndex;
+              const scale = isActive ? 1.2 : 0.7;
+              const opacity = isActive ? 1 : 0.3;
+              const blur = isActive ? 0 : 4;
 
               return (
                 <div
                   key={item.src + i}
                   className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-500"
                   style={{
-                    transform: `translate3d(${x}px, ${y}px, ${z}px) scale(${activeScale})`,
+                    transform: `translate3d(${finalX}px, ${y}px, ${finalZ}px) scale(${scale})`,
                     transformStyle: "preserve-3d",
-                    zIndex: Math.round(activeScale * 100),
-                    width: "240px",
+                    zIndex: isActive ? 100 : 1,
+                    width: "260px",
                     opacity,
-                    filter: isActive ? "none" : "blur(1px)",
+                    filter: `blur(${blur}px)`,
                   }}
                 >
                   <button
@@ -131,9 +129,9 @@ export function SpiralGallery({
         </div>
 
         {/* 当前图片信息 */}
-        <div className="absolute bottom-24 left-0 right-0 text-center">
-          <h3 className="font-serif text-2xl text-paper">{currentItem?.caption ?? currentItem?.title}</h3>
-          <p className="mt-2 text-sm text-muted">{currentItem?.hint}</p>
+        <div className="absolute bottom-32 left-0 right-0 text-center">
+          <h3 className="font-serif text-3xl text-paper">{valid[activeIndex]?.caption ?? valid[activeIndex]?.title}</h3>
+          <p className="mt-3 text-base text-muted">{valid[activeIndex]?.hint}</p>
         </div>
 
         {/* 滚动提示 */}
