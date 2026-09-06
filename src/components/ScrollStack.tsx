@@ -2,11 +2,14 @@ import React, { useLayoutEffect, useRef, useCallback } from 'react';
 import type { ReactNode } from 'react';
 
 /**
- * 改造自 react-bits ScrollStack（TS-TW 变体），本项目落地时做了两处关键调整：
+ * 改造自 react-bits ScrollStack（TS-TW 变体），本项目落地时做了几处关键调整：
  *  1. 移除 Lenis 依赖：原版在整页模式下会创建全局平滑滚动实例（syncTouch 劫持触摸），
  *     在微信内置浏览器上有滚动卡顿风险，改为原生 scroll/resize 被动监听；
- *  2. 仅保留整页滚动模式（本站唯一用法），卡片查询收敛到组件根节点内部，
- *     内边距按本项目节奏重设。直角体系由使用方通过 itemClassName 提供。
+ *  2. 仅保留整页滚动模式（本站唯一用法），卡片查询收敛到组件根节点内部；
+ *  3. 卡片位置用 offsetTop 链计算：getBoundingClientRect 会把已应用的 transform 算进去，
+ *     反用它反推 translateY 会形成反馈循环（卡片在堆叠位与原位间震荡）；
+ *  4. 间距支持渐进（ramp）：传 itemDistanceEnd / itemStackDistanceEnd 后，
+ *     卡片间距随索引线性拉开——前紧后松的叙事节奏（见 WhyJoin）。
  * 「减弱动态」时不渲染本组件（见 WhyJoin 的回退分支）。
  */
 
@@ -30,12 +33,16 @@ export const ScrollStackItem: React.FC<ScrollStackItemProps> = ({ children, item
 interface ScrollStackProps {
   className?: string;
   children: ReactNode;
-  /** 卡片之间的滚动间距（px），由脚本注入为 marginBottom */
+  /** 第一张卡片之后的滚动间距（px） */
   itemDistance?: number;
+  /** 最后一张卡片之后的滚动间距（px）；设置后间距随索引线性拉开（前紧后松） */
+  itemDistanceEnd?: number;
   /** 每深一层卡片多缩小的比例 */
   itemScale?: number;
-  /** 堆叠后相邻卡片错开的纵向距离（px） */
+  /** 堆叠后相邻卡片错开的纵向距离（px），作用于第 0 层 */
   itemStackDistance?: number;
+  /** 堆叠错位的末端值（px）；设置后错位随深度线性加深 */
+  itemStackDistanceEnd?: number;
   /** 卡片顶边滚动到视口高度百分之几时开始堆叠（如 '18%'） */
   stackPosition?: string;
   /** 缩放动画在视口高度百分之几处完成（如 '10%'） */
@@ -53,8 +60,10 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   children,
   className = '',
   itemDistance = 32,
+  itemDistanceEnd,
   itemScale = 0.012,
   itemStackDistance = 16,
+  itemStackDistanceEnd,
   stackPosition = '18%',
   scaleEndPosition = '10%',
   baseScale = 0.925,
@@ -66,6 +75,15 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   const stackCompletedRef = useRef(false);
   const cardsRef = useRef<HTMLElement[]>([]);
   const lastTransformsRef = useRef(new Map<number, { translateY: number; scale: number; rotation: number; blur: number }>());
+
+  /** 第 i 张卡片（共 total 张）在 start~end 间的线性插值；未设 end 时恒为 start */
+  const ramp = useCallback(
+    (start: number, end: number | undefined, i: number, total: number) => {
+      if (end === undefined || total <= 1) return start;
+      return start + (end - start) * (i / (total - 1));
+    },
+    []
+  );
 
   const calculateProgress = useCallback((scrollTop: number, start: number, end: number) => {
     if (scrollTop < start) return 0;
@@ -81,9 +99,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   }, []);
 
   /**
-   * 取卡片在文档中的布局位置。必须走 offsetTop 链：
-   * getBoundingClientRect 会把已应用的 transform 算进去，
-   * 用它反推 translateY 会形成反馈循环（卡片在堆叠位与原位间来回震荡）。
+   * 取卡片在文档中的布局位置（offsetTop 链，不受 transform 影响）。
    */
   const getElementOffset = useCallback((element: HTMLElement) => {
     let top = 0;
@@ -102,6 +118,11 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     const containerHeight = window.innerHeight;
     const stackPositionPx = parsePercentage(stackPosition, containerHeight);
     const scaleEndPositionPx = parsePercentage(scaleEndPosition, containerHeight);
+    const total = cardsRef.current.length;
+
+    // 每层的堆叠错位，以及前 i 层的累计错位（决定各卡片的触发与停泊位）
+    const stackDists = cardsRef.current.map((_, i) => ramp(itemStackDistance, itemStackDistanceEnd, i, total));
+    const cumulative = (i: number) => stackDists.slice(0, i).reduce((sum, d) => sum + d, 0);
 
     const endElement = rootRef.current?.querySelector('.scroll-stack-end') as HTMLElement | null;
     const endElementTop = endElement ? getElementOffset(endElement) : 0;
@@ -110,9 +131,10 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       if (!card) return;
 
       const cardTop = getElementOffset(card);
-      const triggerStart = cardTop - stackPositionPx - itemStackDistance * i;
+      const cumStack = cumulative(i);
+      const triggerStart = cardTop - stackPositionPx - cumStack;
       const triggerEnd = cardTop - scaleEndPositionPx;
-      const pinStart = cardTop - stackPositionPx - itemStackDistance * i;
+      const pinStart = triggerStart;
       const pinEnd = endElementTop - containerHeight / 2;
 
       const scaleProgress = calculateProgress(scrollTop, triggerStart, triggerEnd);
@@ -123,9 +145,11 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       let blur = 0;
       if (blurAmount) {
         let topCardIndex = 0;
-        for (let j = 0; j < cardsRef.current.length; j++) {
-          const jCardTop = getElementOffset(cardsRef.current[j]);
-          const jTriggerStart = jCardTop - stackPositionPx - itemStackDistance * j;
+        for (let j = 0; j < total; j++) {
+          const jCard = cardsRef.current[j];
+          if (!jCard) continue;
+          const jCardTop = getElementOffset(jCard);
+          const jTriggerStart = jCardTop - stackPositionPx - cumulative(j);
           if (scrollTop >= jTriggerStart) {
             topCardIndex = j;
           }
@@ -141,9 +165,9 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       const isPinned = scrollTop >= pinStart && scrollTop <= pinEnd;
 
       if (isPinned) {
-        translateY = scrollTop - cardTop + stackPositionPx + itemStackDistance * i;
+        translateY = scrollTop - cardTop + stackPositionPx + cumStack;
       } else if (scrollTop > pinEnd) {
-        translateY = pinEnd - cardTop + stackPositionPx + itemStackDistance * i;
+        translateY = pinEnd - cardTop + stackPositionPx + cumStack;
       }
 
       const newTransform = {
@@ -171,7 +195,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
         lastTransformsRef.current.set(i, newTransform);
       }
 
-      if (i === cardsRef.current.length - 1) {
+      if (i === total - 1) {
         const isInView = scrollTop >= pinStart && scrollTop <= pinEnd;
         if (isInView && !stackCompletedRef.current) {
           stackCompletedRef.current = true;
@@ -184,12 +208,14 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   }, [
     itemScale,
     itemStackDistance,
+    itemStackDistanceEnd,
     stackPosition,
     scaleEndPosition,
     baseScale,
     rotationAmount,
     blurAmount,
     onStackComplete,
+    ramp,
     calculateProgress,
     parsePercentage,
     getElementOffset
@@ -202,10 +228,11 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     const cards = Array.from(root.querySelectorAll('.scroll-stack-card')) as HTMLElement[];
     if (!cards.length) return;
     cardsRef.current = cards;
+    const total = cards.length;
 
     cards.forEach((card, i) => {
-      if (i < cards.length - 1) {
-        card.style.marginBottom = `${itemDistance}px`;
+      if (i < total - 1) {
+        card.style.marginBottom = `${ramp(itemDistance, itemDistanceEnd, i, total)}px`;
       }
       card.style.willChange = 'transform, filter';
       card.style.transformOrigin = 'top center';
@@ -226,7 +253,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       cardsRef.current = [];
       lastTransformsRef.current.clear();
     };
-  }, [itemDistance, updateCardTransforms]);
+  }, [itemDistance, itemDistanceEnd, updateCardTransforms, ramp]);
 
   return (
     <div className={`relative w-full ${className}`.trim()} ref={rootRef}>

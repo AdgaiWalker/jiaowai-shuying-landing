@@ -49,7 +49,7 @@ export function WhyJoin() {
         </div>
       ) : (
         <div className="mx-auto mt-10 max-w-4xl px-4 md:px-6">
-          <ScrollStack itemDistance={32} itemStackDistance={16}>
+          <ScrollStack itemDistance={12} itemDistanceEnd={100} itemStackDistance={10} itemStackDistanceEnd={28}>
             {items.map((item) => (
               <ScrollStackItem
                 key={item.need}
