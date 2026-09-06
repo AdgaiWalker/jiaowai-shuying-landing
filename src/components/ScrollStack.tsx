@@ -143,7 +143,9 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       const rotation = rotationAmount ? i * rotationAmount * scaleProgress : 0;
 
       let blur = 0;
-      if (blurAmount) {
+      // 移动端 / 减弱动态：景深模糊降载为 0（inline style 不受 CSS media query 覆盖，必须在此处判断）
+      const effectiveBlur = window.matchMedia('(max-width: 767px), (prefers-reduced-motion: reduce)').matches ? 0 : blurAmount;
+      if (effectiveBlur) {
         let topCardIndex = 0;
         for (let j = 0; j < total; j++) {
           const jCard = cardsRef.current[j];
@@ -157,7 +159,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
         if (i < topCardIndex) {
           const depthInStack = topCardIndex - i;
-          blur = Math.max(0, depthInStack * blurAmount);
+          blur = Math.max(0, depthInStack * effectiveBlur);
         }
       }
 

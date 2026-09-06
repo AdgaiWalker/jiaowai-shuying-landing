@@ -110,6 +110,29 @@ details[open] .faq-icon {
   transform: rotate(45deg);
 }
 
+/* 全站可点元素统一按压缩反馈（Apple 风格：按下即响应，不等待释放） */
+button,
+[role="button"],
+a,
+summary,
+input,
+textarea,
+select {
+  transition: transform 120ms ease-out, opacity 120ms ease-out;
+}
+button:active,
+[role="button"]:active,
+a:active,
+summary:active {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+/* 主 CTA 用更强的反馈（已有 active:scale，此处做兜底） */
+a[href="#join"],
+button[type="button"] {
+  transition: transform 120ms ease-out;
+}
+
 /* 活动类型跑马灯：内容复制一份，translateX -50%→0 实现从左至右无缝漂移 */
 @keyframes marqueeRight {
   from {
@@ -137,4 +160,34 @@ details[open] .faq-icon {
   .marquee::-webkit-scrollbar {
     display: none;
   }
+}
+/* 手机端：活动类型标签行退化为静态可滑横条（照片带继续飘） */
+@media (max-width: 767px) {
+  .marquee-track {
+    animation: none;
+  }
+  .marquee-copy {
+    display: none;
+  }
+  .marquee {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .marquee::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* 低端设备 / 减弱动态：降低堆叠卡片的景深模糊量，减轻滚动压力 */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-stack-card {
+    /* 在 blurAmount=0.45 的基础上，减弱动态时强制归零 */
+    filter: none !important;
+  }
+}
+/* 移动端也降一档模糊（粗指针设备滚动压力更大） */
+@media (max-width: 767px) {
+  /* 注意：这里的 blur 由 JS 内联写入 style.filter，
+     此处 media query 只作为降级兜底，实际由 ScrollStack 组件根据
+     matchMedia 判断后降低 blurAmount 参数，不在此处硬覆盖 */
 }
