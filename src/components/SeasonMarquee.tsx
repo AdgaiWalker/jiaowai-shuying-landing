@@ -49,7 +49,7 @@ export function SeasonMarquee({ seasons }: { seasons: Season[] }) {
         aria-label="黑河四季作品"
       >
         <div
-          className="marquee-track flex w-max group-hover:[animation-play-state:paused]"
+          className="season-track flex w-max group-hover:[animation-play-state:paused]"
           style={{ animationDuration: "44s" }}
         >
           {row(false)}

@@ -161,7 +161,24 @@ button[type="button"] {
     display: none;
   }
 }
-/* 手机端：活动类型标签行退化为静态可滑横条（照片带继续飘） */
+/* 四季照片带：独立动画名，不受标签跑马灯降噪影响 */
+@keyframes seasonSlide {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+.season-track {
+  animation: seasonSlide 44s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .season-track {
+    animation: none;
+  }
+}
+/* 手机端：活动类型标签行退化为静态可滑横条（照片带继续飘，见 .season-track） */
 @media (max-width: 767px) {
   .marquee-track {
     animation: none;
