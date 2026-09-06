@@ -1,6 +1,13 @@
 import { site } from "../config/site";
 
-/** 吸顶导航：桌面端单行、高度 64px，移动端只保留品牌与主转化按钮 */
+const links = [
+  { href: "#about", label: "关于" },
+  { href: "#highlights", label: "亮点" },
+  { href: "#works", label: "作品" },
+  { href: "#faq", label: "常问" },
+];
+
+/** 吸顶导航：桌面端单行；手机端第二行为横向滑动的锚点 chips（wayfinding，此前手机端完全没有导航） */
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-ink/85 backdrop-blur">
@@ -10,18 +17,11 @@ export function SiteHeader() {
           <span className="font-serif text-lg tracking-wide">{site.name}</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm text-muted md:flex" aria-label="页面导航">
-          <a href="#about" className="transition-colors hover:text-paper">
-            关于
-          </a>
-          <a href="#highlights" className="transition-colors hover:text-paper">
-            亮点
-          </a>
-          <a href="#works" className="transition-colors hover:text-paper">
-            作品
-          </a>
-          <a href="#faq" className="transition-colors hover:text-paper">
-            常问
-          </a>
+          {links.map((l) => (
+            <a key={l.href} href={l.href} className="transition-colors hover:text-paper">
+              {l.label}
+            </a>
+          ))}
         </nav>
         <a
           href="#join"
@@ -30,6 +30,19 @@ export function SiteHeader() {
           扫码进群
         </a>
       </div>
+      <nav aria-label="页面导航" className="border-t border-line/60 md:hidden">
+        <div className="no-scrollbar mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 py-1.5">
+          {links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="whitespace-nowrap border border-line px-2.5 py-1 text-[11px] text-muted transition-colors active:border-paper/40 active:text-paper"
+            >
+              {l.label}
+            </a>
+          ))}
+        </div>
+      </nav>
     </header>
   );
 }

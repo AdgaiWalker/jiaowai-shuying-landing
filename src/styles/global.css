@@ -33,6 +33,16 @@ html {
   }
 }
 
+/* 锚点定位让出吸顶头部（手机端头部含 chips 行更高） */
+section[id] {
+  scroll-margin-top: 7rem;
+}
+@media (min-width: 768px) {
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
+}
+
 body {
   background-color: var(--color-ink);
   color: var(--color-paper);
