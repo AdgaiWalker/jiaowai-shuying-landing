@@ -41,10 +41,10 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto mt-auto w-full max-w-6xl px-4 pb-24 pt-16 md:px-6 md:pb-28">
         <Reveal>
-          <p className="text-xs tracking-[0.25em] text-muted">{site.eyebrow}</p>
+          <p className="micro-label text-xs tracking-[0.28em] text-muted">{site.eyebrow}</p>
         </Reveal>
         {reduce ? (
-          <h1 className="mt-4 font-serif text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl md:text-8xl">
+          <h1 className="display-title mt-4 font-serif text-5xl font-semibold leading-[1.02] tracking-[-0.03em] sm:text-6xl md:text-8xl md:tracking-[-0.04em]">
             {site.name}
           </h1>
         ) : (
@@ -57,11 +57,11 @@ export function Hero() {
             animationFrom={{ opacity: 0, y: 48 }}
             animationTo={[{ opacity: 1, y: 0 }]}
             easing={[0.16, 1, 0.3, 1]}
-            className="mt-4 font-serif text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl md:text-8xl"
+            className="display-title mt-4 font-serif text-5xl font-semibold leading-[1.02] tracking-[-0.03em] sm:text-6xl md:text-8xl md:tracking-[-0.04em]"
           />
         )}
         {reduce ? (
-          <p className="mt-4 font-serif text-lg text-paper/90 md:text-xl">{site.slogan}</p>
+          <p className="mt-4 font-serif text-lg tracking-[-0.012em] text-paper/90 md:text-xl">{site.slogan}</p>
         ) : (
           <BlurText
             text={site.slogan}
@@ -69,11 +69,11 @@ export function Hero() {
             direction="bottom"
             delay={80}
             stepDuration={0.45}
-            className="mt-4 font-serif text-lg text-paper/90 md:text-xl"
+            className="mt-4 font-serif text-lg tracking-[-0.012em] text-paper/90 md:text-xl"
           />
         )}
         <Reveal delay={0.12}>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted md:text-base">
+          <p className="mt-3 max-w-xl text-sm leading-[1.7] text-muted md:text-base">
             你的大学四年，不会只是往返于宿舍、食堂与课堂。
           </p>
         </Reveal>
@@ -81,15 +81,16 @@ export function Hero() {
           <div className="mt-8 flex flex-wrap gap-3">
             <a
               href="#join"
-              className="bg-accent px-6 py-3 text-sm font-medium text-ink transition-transform active:scale-[0.98]"
+              className="bg-accent px-6 py-3 text-sm font-medium text-ink shadow-[0_2px_12px_rgba(229,72,77,0.3)] transition-transform active:scale-[0.96]"
             >
               扫码进群
             </a>
             <a
               href="#works"
-              className="border border-paper/30 px-6 py-3 text-sm text-paper/90 transition-colors hover:border-paper/60"
+              className="flex items-center gap-1.5 border border-white/20 bg-white/[0.03] px-6 py-3 text-sm text-paper/90 backdrop-blur-sm transition-all hover:border-white/50 active:scale-[0.96]"
             >
-              看作品
+              <span>浏览流体相册</span>
+              <span className="text-[11px] text-accent"></span>
             </a>
           </div>
         </Reveal>
