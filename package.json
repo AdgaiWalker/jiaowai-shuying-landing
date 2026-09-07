@@ -3,6 +3,12 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "author": "哆啦 (倪聪) <praxiswalker@gmail.com>",
+  "contributors": [
+    "喵喵酱 (Lead Photographer & Visual Assets)",
+    "周泓旭 (Founding Advisor & Domain Sponsor)",
+    "吴长轩 (Community Operations & Liaison)"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
