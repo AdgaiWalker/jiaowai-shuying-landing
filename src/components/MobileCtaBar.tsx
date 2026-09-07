@@ -43,7 +43,7 @@ export function MobileCtaBar() {
       <div className="px-4 pt-3" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}>
         <a
           href="#join"
-          className="block bg-accent py-3 text-center text-sm font-medium text-ink shadow-[0_2px_12px_rgba(229,72,77,0.3)] transition-transform duration-120 active:scale-[0.96]"
+          className="block rounded-full bg-accent py-3 text-center text-sm font-medium text-white shadow-[0_2px_16px_rgba(229,72,77,0.35)] transition-transform duration-120 active:scale-[0.96]"
         >
           扫码进群
         </a>

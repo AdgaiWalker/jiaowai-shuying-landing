@@ -5,7 +5,7 @@ import { site } from "../config/site";
  */
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line pb-28 pt-10 md:pb-12">
+    <footer className="relative border-t border-white/10 bg-ink/40 backdrop-blur-md pb-28 pt-12 md:pb-14">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>

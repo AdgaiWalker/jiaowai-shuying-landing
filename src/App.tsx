@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { MobileCtaBar } from "./components/MobileCtaBar";
 import { SiteHeader } from "./components/SiteHeader";
+import { OpticalBokehField } from "./components/OpticalBokehField";
 import { About } from "./sections/About";
 import { Activities } from "./sections/Activities";
 import { Faq } from "./sections/Faq";
@@ -24,9 +25,12 @@ export default function App() {
   }, []);
 
   return (
-    <div className="grain min-h-[100dvh]">
+    <div className="grain relative min-h-[100dvh] overflow-x-hidden">
+      {/* 统领全站的实时光子焦外散景引擎 */}
+      <OpticalBokehField />
+
       <SiteHeader />
-      <main>
+      <main className="relative z-10">
         <Hero />
         <StatsStrip />
         <About />

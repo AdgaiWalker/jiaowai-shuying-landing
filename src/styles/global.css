@@ -254,9 +254,25 @@ button[type="button"] {
     filter: none !important;
   }
 }
-/* 移动端也降一档模糊（粗指针设备滚动压力更大） */
-@media (max-width: 767px) {
-  /* 注意：这里的 blur 由 JS 内联写入 style.filter，
-     此处 media query 只作为降级兜底，实际由 ScrollStack 组件根据
-     matchMedia 判断后降低 blurAmount 参数，不在此处硬覆盖 */
+
+/* ═══ 高级半透玻璃与发丝光双层倒角（让底层光斑透射） ═══ */
+.surface-glass {
+  background-color: rgba(18, 19, 23, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.surface-glass-subtle {
+  background-color: rgba(18, 19, 23, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.double-bezel {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 24px 48px -12px rgba(0, 0, 0, 0.65);
+}
+
+.hairline-border {
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
