@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { FocusLens } from "./components/FocusLens";
 import { MobileCtaBar } from "./components/MobileCtaBar";
 import { SiteHeader } from "./components/SiteHeader";
 import { About } from "./sections/About";
@@ -39,7 +38,6 @@ export default function App() {
         <Join />
       </main>
       <SiteFooter />
-      <FocusLens />
       <MobileCtaBar />
     </div>
   );
