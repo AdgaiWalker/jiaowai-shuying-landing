@@ -170,6 +170,17 @@ export const heroMusic: string | null = "/audio/snowfall.m4a";
 
 ---
 
+## 👥 制作与贡献 (Credits)
+
+按英文首字母排序（A-Z）：
+
+- **喵喵** (Miaomiao)
+- **倪聪** (Ni Cong)
+- **吴长轩** (Wu Changxuan)
+- **周红旭** (Zhou Hongxu)
+
+---
+
 ## 📄 版权与授权
 
 - 本项目由黑河学院「焦外述影」摄影与影像社团持有。
@@ -178,3 +189,4 @@ export const heroMusic: string | null = "/audio/snowfall.m4a";
   - 《Gymnopédie No. 1》 by Erik Satie / Kevin MacLeod
   - 《That Zen Moment》 by Kevin MacLeod ([incompetech.com](https://incompetech.com/))
 - 代码开源协议：[MIT License](LICENSE)
+
