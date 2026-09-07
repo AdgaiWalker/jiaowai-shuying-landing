@@ -44,7 +44,7 @@ export function Hero() {
           <p className="text-xs tracking-[0.25em] text-muted">{site.eyebrow}</p>
         </Reveal>
         {reduce ? (
-          <h1 className="mt-4 font-serif text-6xl font-semibold leading-[1.05] md:text-8xl">
+          <h1 className="mt-4 font-serif text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl md:text-8xl">
             {site.name}
           </h1>
         ) : (
@@ -52,12 +52,12 @@ export function Hero() {
             text={site.name}
             tag="h1"
             animateBy="letters"
-            delay={140}
-            stepDuration={0.9}
-            animationFrom={{ opacity: 0, y: 56 }}
+            delay={100}
+            stepDuration={0.8}
+            animationFrom={{ opacity: 0, y: 48 }}
             animationTo={[{ opacity: 1, y: 0 }]}
             easing={[0.16, 1, 0.3, 1]}
-            className="mt-4 font-serif text-6xl font-semibold leading-[1.05] md:text-8xl"
+            className="mt-4 font-serif text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl md:text-8xl"
           />
         )}
         {reduce ? (

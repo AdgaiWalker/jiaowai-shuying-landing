@@ -11,12 +11,12 @@ export function SiteFooter() {
           <div>
             <p className="font-serif text-base text-paper">{site.name}</p>
             <p className="mt-1 text-xs text-muted">
-              {site.school} · 焦外述影 摄影社团 · 在焦点之外，讲述光影
+              {site.school} · {site.name} · 在焦点之外，讲述光影
             </p>
           </div>
 
           <div className="text-xs text-faint md:text-right">
-            <p>© {new Date().getFullYear()} {site.name} · All rights reserved.</p>
+            <p>© {new Date().getFullYear()} {site.name}版权所有</p>
             <p className="mt-0.5 text-[10px] text-faint/60">
               BGM: "Snowfall" by Scott Buckley (CC-BY 4.0)
             </p>

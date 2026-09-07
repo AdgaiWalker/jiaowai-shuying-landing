@@ -28,11 +28,11 @@ export type PhotoSpec = {
 /* ── 品牌文案（上线前请社长逐条确认） ─────────────────────────── */
 
 export const site = {
-  name: "焦外述影",
+  name: "焦外述影社团",
   school: "黑河学院",
   // slogan 已定稿（2026-09）
   slogan: "在焦点之外，讲述光影",
-  eyebrow: "黑河学院 · 焦外述影",
+  eyebrow: "黑河学院 · 焦外述影社团",
   intro: [
     "你带着一部普通的手机来到黑河。在接下来的四年里，你的大学生活不会只是往返于宿舍、食堂与课堂之间。",
     "在焦述，你将在零下三十度的江边记录晨雾，在落叶铺满的街巷学会调整快门，在全校大型活动的现场挂上属于你的工作牌。这里没有层级与门槛，只有递到你手里的相机，和并肩创作的同伴。",
@@ -116,7 +116,78 @@ export const works: PhotoSpec[] = [
   { src: "/photos/work-golden-bokeh.jpg", title: "作品位", hint: "一街光斑", spec: "", ratio: "3/2", caption: "一街光斑" },
 ];
 
-/* ── 硬亮点大图（两张「先进集体」荣誉证书拼图，2026.6 党委宣传统战部颁发）── */
+/* ── 硬亮点与背书（省里官方转发、校统战部先进集体、黑河日报专版报道）── */
+
+export type EndorsementItem =
+  | {
+      id: string;
+      level: "省里推荐" | "校级表彰" | "市级党媒";
+      badge: string;
+      title: string;
+      source: string;
+      desc: string;
+      type: "video";
+      src: string;
+      poster: string;
+    }
+  | {
+      id: string;
+      level: "省里推荐" | "校级表彰" | "市级党媒";
+      badge: string;
+      title: string;
+      source: string;
+      desc: string;
+      type: "photo";
+      src: string;
+      ratio: "16/9" | "2/3" | "3/4" | "4/5" | "1/1" | "4/3" | "3/2";
+    };
+
+export const endorsements: EndorsementItem[] = [
+  {
+    id: "provincial-league",
+    level: "省里推荐",
+    badge: "团省委转发",
+    title: "共青团黑龙江省委官方视频号转发",
+    source: "共青团黑龙江省委官方视频号",
+    desc: "社团多部视频创作获团省委官方平台选用展播并全省推介",
+    type: "video",
+    src: "/videos/provincial-league.mp4",
+    poster: "/videos/provincial-league-poster.jpg",
+  },
+  {
+    id: "provincial-gqt",
+    level: "省里推荐",
+    badge: "黑龙江省共青团",
+    title: "黑龙江省共青团官方新媒体转发",
+    source: "黑龙江省共青团官方新媒体矩阵",
+    desc: "作品多次被黑龙江省共青团官方账号作为青年优秀创作转发",
+    type: "video",
+    src: "/videos/provincial-gqt.mp4",
+    poster: "/videos/provincial-gqt-poster.jpg",
+  },
+  {
+    id: "school-award",
+    level: "校级表彰",
+    badge: "党委统战部",
+    title: "两届盛会宣传工作「先进集体」荣誉证书",
+    source: "黑河学院党委宣传统战部（2026.6 颁发）",
+    desc: "中俄大学生交流大会 / 中俄远东高校田径运动大会宣传先进集体原件",
+    type: "photo",
+    src: "/photos/award.jpg",
+    ratio: "16/9",
+  },
+  {
+    id: "city-media",
+    level: "市级党媒",
+    badge: "黑河日报",
+    title: "《黑河日报》专版采访与署名供稿",
+    source: "中共黑河市委机关报 · 《黑河日报》",
+    desc: "社团骨干与摄影纪实成果登上党媒专题版面，获个人署名供稿",
+    type: "photo",
+    src: "/photos/media-interview.jpg",
+    ratio: "3/4",
+  },
+];
 
 export const awardImage: PhotoSpec = {
   src: "/photos/award.jpg",
