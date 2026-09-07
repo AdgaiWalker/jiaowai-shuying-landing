@@ -244,13 +244,22 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
     updateCardTransforms();
 
-    const onScroll = () => updateCardTransforms();
+    let frameId = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(updateCardTransforms);
+    };
+    const onResize = () => {
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(updateCardTransforms);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('resize', onResize);
 
     return () => {
+      cancelAnimationFrame(frameId);
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
+      window.removeEventListener('resize', onResize);
       stackCompletedRef.current = false;
       cardsRef.current = [];
       lastTransformsRef.current.clear();

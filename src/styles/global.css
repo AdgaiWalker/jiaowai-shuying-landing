@@ -118,14 +118,13 @@ summary,
 input,
 textarea,
 select {
-  transition: transform 120ms ease-out, opacity 120ms ease-out;
+  transition: transform 120ms ease-out;
 }
 button:active,
 [role="button"]:active,
 a:active,
 summary:active {
-  transform: scale(0.97);
-  opacity: 0.92;
+  transform: scale(0.98);
 }
 /* 主 CTA 用更强的反馈（已有 active:scale，此处做兜底） */
 a[href="#join"],

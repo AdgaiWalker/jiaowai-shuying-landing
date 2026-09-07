@@ -30,6 +30,7 @@ export interface InfiniteSpiralProps {
   imageFit?: CSSProperties['objectFit'];
   grayscale?: number;
   className?: string;
+  onItemClick?: (index: number, item: NormalizedItem) => void;
 }
 
 type NormalizedItem = InfiniteSpiralItem & { alt: string };
@@ -43,28 +44,29 @@ const smoothstep = (min: number, max: number, value: number) => {
 
 const InfiniteSpiral = ({
   items = [],
-  speed = 0.55,
+  speed = 0.65,
   direction = 'up',
   animationMode = 'auto',
-  radius = 170,
-  cardWidth = 100,
-  cardHeight = 100,
-  verticalSpacing = 60,
+  radius = 260,
+  cardWidth = 210,
+  cardHeight = 270,
+  verticalSpacing = 135,
   perspective = 1000,
-  cardsPerTurn = 7,
+  cardsPerTurn = 6,
   rotation = 0,
   cardTilt = 0,
-  cardRadius = 10,
-  centerScale = 1.2,
-  edgeFade = 0.3,
-  edgeBlur = 6,
-  pauseOnHover = true,
+  cardRadius = 0,
+  centerScale = 1.25,
+  edgeFade = 0.35,
+  edgeBlur = 4,
+  pauseOnHover = false,
   imageFit = 'cover',
   grayscale = 0,
-  className = ''
+  className = '',
+  onItemClick
 }: InfiniteSpiralProps) => {
   const rootRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<Array<HTMLAnchorElement | HTMLDivElement | null>>([]);
+  const cardRefs = useRef<Array<HTMLAnchorElement | HTMLDivElement | HTMLButtonElement | null>>([]);
   const progressRef = useRef(0);
   const targetProgressRef = useRef(0);
   const autoSpeedRef = useRef(0);
@@ -95,6 +97,7 @@ const InfiniteSpiral = ({
     const scrollEnabled = animationMode === 'scroll' || animationMode === 'all';
     const scrollSpeedMultiplier = Math.max(speed, 0) / 0.55;
     let lastScrollY = window.scrollY;
+
     const resizeObserver = new ResizeObserver(() => {
       bounds = root.getBoundingClientRect();
     });
@@ -199,7 +202,7 @@ const InfiniteSpiral = ({
     '--spiral-height': `${cardHeight}px`,
     '--spiral-radius': `${cardRadius}px`,
     cursor: animationMode === 'drag' || animationMode === 'all' ? 'grab' : 'default',
-    touchAction: animationMode === 'drag' || animationMode === 'all' ? 'pan-x' : 'auto',
+    touchAction: 'pan-y',
     userSelect: animationMode === 'drag' || animationMode === 'all' ? 'none' : 'auto'
   } as CSSProperties;
 
@@ -214,7 +217,7 @@ const InfiniteSpiral = ({
     event.currentTarget.style.cursor = dragEnabled ? 'grab' : 'default';
   };
 
-  const setCardRef = (index: number) => (node: HTMLAnchorElement | HTMLDivElement | null) => {
+  const setCardRef = (index: number) => (node: HTMLAnchorElement | HTMLDivElement | HTMLButtonElement | null) => {
     cardRefs.current[index] = node;
   };
 
@@ -229,12 +232,12 @@ const InfiniteSpiral = ({
   };
 
   const itemClassName =
-    'absolute left-1/2 top-1/2 block h-[var(--spiral-height)] w-[var(--spiral-width)] overflow-hidden rounded-[var(--spiral-radius)] border border-white/25 bg-white/10 shadow-[0_14px_38px_rgba(8,6,18,0.2)] [backface-visibility:hidden] [transform-style:preserve-3d] [will-change:transform,opacity,filter] motion-reduce:transition-none';
+    'absolute left-1/2 top-1/2 block h-[var(--spiral-height)] w-[var(--spiral-width)] overflow-hidden border border-line/90 bg-ink-soft shadow-[0_20px_40px_rgba(0,0,0,0.6)] [backface-visibility:hidden] [transform-style:preserve-3d] [will-change:transform,opacity] motion-reduce:transition-none';
 
   return (
     <div
       ref={rootRef}
-      className={`relative isolate h-full min-h-80 w-full overflow-hidden ${className}`}
+      className={`relative isolate h-full min-h-[460px] w-full overflow-hidden ${className}`}
       style={rootStyle}
       onMouseEnter={() => {
         hoveredRef.current = true;
@@ -270,20 +273,29 @@ const InfiniteSpiral = ({
       <div className="absolute inset-0 [transform-style:preserve-3d]" role="list" aria-label="Infinite spiral gallery">
         {normalizedItems.map((item, index) => {
           const content = (
-            <img
-              className="absolute inset-0 block h-full w-full select-none object-center"
-              src={item.src}
-              alt={item.alt}
-              loading={index < 6 ? 'eager' : 'lazy'}
-              draggable={false}
-              style={imageStyle}
-            />
+            <>
+              <img
+                className="absolute inset-0 block h-full w-full select-none object-center"
+                src={item.src}
+                alt={item.alt}
+                loading={index < 6 ? 'eager' : 'lazy'}
+                draggable={false}
+                style={imageStyle}
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100 md:block">
+                {item.label && (
+                  <p className="absolute bottom-2 left-2 right-2 truncate font-serif text-xs text-paper">
+                    {item.label}
+                  </p>
+                )}
+              </div>
+            </>
           );
 
           return item.href ? (
             <a
               key={item.id ?? `${item.src}-${index}`}
-              ref={setCardRef(index)}
+              ref={setCardRef(index) as (node: HTMLAnchorElement | null) => void}
               className={itemClassName}
               style={cardStyle}
               href={item.href}
@@ -294,10 +306,27 @@ const InfiniteSpiral = ({
             >
               {content}
             </a>
+          ) : onItemClick ? (
+            <button
+              type="button"
+              key={item.id ?? `${item.src}-${index}`}
+              ref={setCardRef(index) as (node: HTMLButtonElement | null) => void}
+              className={`${itemClassName} group cursor-zoom-in text-left transition-transform active:scale-[0.98] focus:outline-none`}
+              style={cardStyle}
+              onClick={() => {
+                if (!dragMovedRef.current) {
+                  onItemClick(index, item);
+                }
+              }}
+              role="listitem"
+              aria-label={`查看大图：${item.label ?? item.alt}`}
+            >
+              {content}
+            </button>
           ) : (
             <div
               key={item.id ?? `${item.src}-${index}`}
-              ref={setCardRef(index)}
+              ref={setCardRef(index) as (node: HTMLDivElement | null) => void}
               className={itemClassName}
               style={cardStyle}
               role="listitem"

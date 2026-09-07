@@ -114,9 +114,9 @@ export function Lightbox({ items, index, onClose, onNavigate }: Props) {
                 src={item.src}
                 poster={"poster" in item ? item.poster : undefined}
                 className="max-h-full max-w-full"
-                initial={{ opacity: 0, scale: 0.985 }}
+                initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ type: "spring", stiffness: 320, damping: 26 }}
                 controls
                 autoPlay
                 onClick={(e) => e.stopPropagation()}
@@ -127,9 +127,9 @@ export function Lightbox({ items, index, onClose, onNavigate }: Props) {
                 src={item.src}
                 alt={label(item)}
                 className="max-h-full max-w-full object-contain"
-                initial={{ opacity: 0, scale: 0.985 }}
+                initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ type: "spring", stiffness: 320, damping: 26 }}
                 onClick={(e) => e.stopPropagation()}
               />
             )}

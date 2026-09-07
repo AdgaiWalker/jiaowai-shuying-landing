@@ -18,7 +18,7 @@ export function MobileCtaBar() {
       const y = window.scrollY;
       const dy = y - lastY;
       lastY = y;
-      if (y <= window.innerHeight * 0.72) {
+      if (y <= window.innerHeight * 0.5) {
         bar.classList.add("translate-y-full", "opacity-0", "pointer-events-none");
         bar.classList.remove("translate-y-0", "opacity-100");
         return;

@@ -9,9 +9,8 @@ import { Highlights } from "./sections/Highlights";
 import { Join } from "./sections/Join";
 import { SiteFooter } from "./sections/SiteFooter";
 import { StatsStrip } from "./sections/StatsStrip";
-import InfiniteSpiral from "./components/InfiniteSpiral";
+import { Works } from "./sections/Works";
 import { WhyJoin } from "./sections/WhyJoin";
-import { works } from "./config/site";
 
 export default function App() {
   // 直链带锚点（如 /#join）时，等 React 渲染完成再滚动到位
@@ -34,24 +33,7 @@ export default function App() {
         <WhyJoin />
         <Highlights />
         <Activities />
-        <InfiniteSpiral
-          items={works.map((w) => ({
-            src: w.src!,
-            alt: w.caption ?? w.hint,
-            label: w.caption ?? w.title,
-          }))}
-          animationMode="scroll"
-          direction="up"
-          cardsPerTurn={6}
-          radius={260}
-          verticalSpacing={140}
-          centerScale={1.3}
-          edgeFade={0.35}
-          edgeBlur={5}
-          cardWidth={220}
-          cardHeight={280}
-          pauseOnHover
-        />
+        <Works />
         <Faq />
         <Join />
       </main>
