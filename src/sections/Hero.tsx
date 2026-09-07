@@ -22,7 +22,7 @@ export function Hero() {
 
       {hasSlides ? (
         <>
-          <div aria-hidden className="absolute inset-0 z-[1] bg-gradient-to-t from-ink via-ink/70 to-ink/20" />
+          <div aria-hidden className="absolute inset-0 z-[1] bg-gradient-to-t from-ink/80 via-ink/40 to-transparent" />
           <div aria-hidden className="hero-vignette absolute inset-0 z-[2]" />
         </>
       ) : (
@@ -78,16 +78,16 @@ export function Hero() {
           </p>
         </Reveal>
         <Reveal delay={0.18}>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-4">
             <a
               href="#join"
-              className="bg-accent px-6 py-3 text-sm font-medium text-ink transition-transform active:scale-[0.98]"
+              className="rounded-full bg-accent px-7 py-3.5 text-sm font-medium text-white shadow-[0_0_24px_rgba(229,72,77,0.35)] transition-all hover:bg-accent/90 hover:scale-[1.02] active:scale-[0.98]"
             >
               扫码进群
             </a>
             <a
               href="#works"
-              className="border border-paper/30 px-6 py-3 text-sm text-paper/90 transition-colors hover:border-paper/60"
+              className="rounded-full border border-white/20 bg-white/5 px-7 py-3.5 text-sm font-medium text-paper/90 backdrop-blur-md transition-all hover:border-white/40 hover:bg-white/10 active:scale-[0.98]"
             >
               看作品
             </a>

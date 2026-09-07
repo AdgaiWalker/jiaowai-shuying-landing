@@ -38,12 +38,12 @@ export function MobileCtaBar() {
   return (
     <div
       ref={barRef}
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-ink/90 backdrop-blur transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none md:hidden translate-y-full opacity-0 pointer-events-none"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-ink/80 backdrop-blur-xl transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none md:hidden translate-y-full opacity-0 pointer-events-none"
     >
       <div className="px-4 pt-3" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}>
         <a
           href="#join"
-          className="block bg-accent py-3 text-center text-sm font-medium text-ink transition-transform duration-100 active:scale-[0.98]"
+          className="block rounded-full bg-accent py-3 text-center text-sm font-medium text-white shadow-[0_0_20px_rgba(229,72,77,0.35)] transition-transform duration-100 active:scale-[0.98]"
         >
           扫码进群
         </a>

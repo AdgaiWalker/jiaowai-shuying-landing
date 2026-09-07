@@ -2,41 +2,51 @@ import { site } from "../config/site";
 
 const links = [
   { href: "#about", label: "关于" },
+  { href: "#why", label: "成长" },
   { href: "#highlights", label: "亮点" },
+  { href: "#activities", label: "四季" },
   { href: "#works", label: "作品" },
   { href: "#faq", label: "常问" },
 ];
 
-/** 吸顶导航：桌面端单行；手机端第二行为横向滑动的锚点 chips（wayfinding，此前手机端完全没有导航） */
+/** 吸顶导航：双层磨砂微质感；移动端横向药丸 chips 导航 */
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-ink/85 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/75 backdrop-blur-xl transition-colors">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
-        <a href="#top" className="flex items-center gap-2.5">
-          <img src="/logo.jpg" alt="焦外述影社团标志" className="size-8 rounded-full object-cover" />
-          <span className="font-serif text-lg tracking-wide">{site.name}</span>
+        <a href="#top" className="flex items-center gap-3 group">
+          <img
+            src="/logo.jpg"
+            alt="焦外述影社团标志"
+            className="size-8 rounded-full object-cover ring-1 ring-white/20 transition-transform group-hover:scale-105"
+          />
+          <span className="font-serif text-lg tracking-wider text-paper">{site.name}</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm text-muted md:flex" aria-label="页面导航">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="transition-colors hover:text-paper">
+            <a
+              key={l.href}
+              href={l.href}
+              className="transition-colors hover:text-paper text-xs uppercase tracking-widest text-muted/90"
+            >
               {l.label}
             </a>
           ))}
         </nav>
         <a
           href="#join"
-          className="bg-accent px-4 py-2 text-sm font-medium text-ink transition-transform active:scale-[0.98]"
+          className="rounded-full bg-accent px-5 py-2 text-xs md:text-sm font-medium text-white shadow-[0_0_20px_rgba(229,72,77,0.3)] transition-all hover:bg-accent/90 active:scale-[0.98]"
         >
           扫码进群
         </a>
       </div>
-      <nav aria-label="页面导航" className="border-t border-line/60 md:hidden">
-        <div className="no-scrollbar mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 py-1.5">
+      <nav aria-label="页面导航" className="border-t border-white/5 md:hidden">
+        <div className="no-scrollbar mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 py-2">
           {links.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="whitespace-nowrap border border-line px-2.5 py-1 text-[11px] text-muted transition-colors active:border-paper/40 active:text-paper"
+              className="whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-muted/90 transition-colors active:border-white/30 active:text-paper"
             >
               {l.label}
             </a>
