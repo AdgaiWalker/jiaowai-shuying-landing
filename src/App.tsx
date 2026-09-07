@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { FilmRibbon } from "./components/FilmRibbon";
 import { MobileCtaBar } from "./components/MobileCtaBar";
 import { SiteHeader } from "./components/SiteHeader";
 import { About } from "./sections/About";
@@ -38,6 +39,7 @@ export default function App() {
         <Join />
       </main>
       <SiteFooter />
+      <FilmRibbon />
       <MobileCtaBar />
     </div>
   );

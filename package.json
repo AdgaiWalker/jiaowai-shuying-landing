@@ -13,12 +13,14 @@
     "@fontsource-variable/noto-serif-sc": "^5.0.0",
     "@phosphor-icons/react": "^2.1.7",
     "motion": "^12.43.0",
+    "p5": "^2.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.0",
     "@types/node": "^26.4.1",
+    "@types/p5": "^1.7.7",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.5.0",
