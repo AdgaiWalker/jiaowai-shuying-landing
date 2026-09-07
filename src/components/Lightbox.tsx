@@ -1,6 +1,12 @@
 import { ArrowLeft, ArrowRight, X } from "@phosphor-icons/react";
-import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+} from "motion/react";
+import { useEffect } from "react";
 import type { PhotoSpec } from "../config/site";
 
 type LightboxItem =
@@ -14,21 +20,47 @@ type Props = {
   onNavigate: (index: number) => void;
 };
 
+/**
+ *  Apple Design Fluid Lightbox
+ * - 1:1 跟手拖拽（Direct Manipulation）与下拉飞出退出（Drag to Dismiss）
+ * - 速度继承（Velocity Handoff）与动量投射（Momentum Projection: (v/1000) * d / (1-d)）
+ * - 橡皮筋阻尼回弹（Rubber-banding: dragElastic + Apple 标称临界阻尼弹簧）
+ * - Apple 材质与高光（apple-glass + apple-hairline）
+ * - 减弱动态无障碍优雅退化（prefers-reduced-motion）
+ */
 export function Lightbox({ items, index, onClose, onNavigate }: Props) {
   const open = index !== null;
   const item = open ? items[index] : null;
-  const touchStartX = useRef<number | null>(null);
+  const reduce = useReducedMotion() ?? false;
 
+  // 1:1 动态位移与 Apple 材质透明度/微缩映射
+  const dragX = useMotionValue(0);
+  const dragY = useMotionValue(0);
+
+  // 随垂直拉动深度，背景遮罩由深渐浅，给用户底层透出、随时可放手撤销的安全感
+  const bgOpacity = useTransform(dragY, [-360, 0, 360], [0.25, 0.96, 0.25]);
+  const mediaScale = useTransform(dragY, [-360, 0, 360], [0.82, 1, 0.82]);
+  const hintOpacity = useTransform(dragY, [-60, 0, 60], [0, 1, 0]);
+
+  // 重置位移
+  useEffect(() => {
+    dragX.set(0);
+    dragY.set(0);
+  }, [index, dragX, dragY]);
+
+  // 键盘导航
   useEffect(() => {
     if (index === null) return;
     const prevOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
+
     const step = (dir: number) => onNavigate((index + dir + items.length) % items.length);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowRight") step(1);
       if (e.key === "ArrowLeft") step(-1);
     };
+
     window.addEventListener("keydown", onKey);
     return () => {
       document.documentElement.style.overflow = prevOverflow;
@@ -38,21 +70,58 @@ export function Lightbox({ items, index, onClose, onNavigate }: Props) {
 
   const step = (dir: number) => {
     if (index === null) return;
+    dragX.set(0);
+    dragY.set(0);
     onNavigate((index + dir + items.length) % items.length);
   };
 
-  const isVideo = (item: LightboxItem): boolean => {
-    return "type" in item && item.type === "video";
+  const isVideo = (i: LightboxItem): boolean => {
+    return "type" in i && i.type === "video";
   };
 
-  const label = (item: LightboxItem): string => {
-    if ("type" in item && item.type === "video") return item.caption ?? item.hint ?? "";
-    const photo = item as PhotoSpec;
+  const label = (i: LightboxItem): string => {
+    if ("type" in i && i.type === "video") return i.caption ?? i.hint ?? "";
+    const photo = i as PhotoSpec;
     return photo.caption ?? photo.title;
   };
-  const hint = (item: LightboxItem): string => {
-    if ("type" in item && item.type === "video") return item.hint ?? "";
-    return item.hint ?? "";
+
+  const hint = (i: LightboxItem): string => {
+    return i.hint ?? "";
+  };
+
+  /**
+   * Apple WWDC 2018 动量投射算法：
+   * project(v, d) = (v / 1000) * d / (1 - d), d ≈ 0.998
+   */
+  const handleDragEnd = (
+    _e: MouseEvent | TouchEvent | PointerEvent,
+    info: { offset: { x: number; y: number }; velocity: { x: number; y: number } }
+  ) => {
+    const { offset, velocity } = info;
+    const project = (v: number, d = 0.998) => (v / 1000) * (d / (1 - d));
+
+    const absX = Math.abs(offset.x);
+    const absY = Math.abs(offset.y);
+
+    // 垂直手势判定：用户主要意图为下拉退出
+    if (absY > absX) {
+      const projectedY = offset.y + project(velocity.y);
+      // 下拉位移超过 110px，或轻甩投影超过 160px，或指尖瞬时释放速度超过 520px/s
+      if (Math.abs(projectedY) > 160 || absY > 110 || Math.abs(velocity.y) > 520) {
+        onClose();
+        return;
+      }
+    } else if (items.length > 1) {
+      // 水平手势判定：轻扫切图
+      const projectedX = offset.x + project(velocity.x);
+      if (projectedX < -80 || velocity.x < -400) {
+        step(1);
+        return;
+      } else if (projectedX > 80 || velocity.x > 400) {
+        step(-1);
+        return;
+      }
+    }
   };
 
   return (
@@ -62,37 +131,49 @@ export function Lightbox({ items, index, onClose, onNavigate }: Props) {
           role="dialog"
           aria-modal="true"
           aria-label={label(item)}
-          className="fixed inset-0 z-50 flex touch-pan-y flex-col bg-ink/95"
+          className="fixed inset-0 z-50 flex select-none flex-col"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          onTouchStart={(e) => {
-            touchStartX.current = e.touches[0].clientX;
-          }}
-          onTouchEnd={(e) => {
-            if (touchStartX.current === null) return;
-            const dx = e.changedTouches[0].clientX - touchStartX.current;
-            if (Math.abs(dx) > 48) step(dx < 0 ? 1 : -1);
-            touchStartX.current = null;
-          }}
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
         >
-          <button
-            type="button"
+          {/* 动态暗场背景：随跟手下拉平滑透出后方界面 */}
+          <motion.div
+            className="absolute inset-0 bg-ink"
+            style={{ opacity: reduce ? 0.96 : bgOpacity }}
             onClick={onClose}
-            aria-label="关闭"
-            autoFocus
-            className="absolute right-4 top-4 z-10 flex size-11 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur transition-transform duration-100 active:scale-90"
-          >
-            <X size={20} weight="regular" aria-hidden />
-          </button>
+          />
+
+          {/* 顶部控制栏：Apple Glass 磨砂悬浮与发丝高光 */}
+          <div className="relative z-20 flex h-16 items-center justify-between px-4 md:px-6">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs tracking-wider text-muted">
+                {String((index ?? 0) + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
+              </span>
+              <span className="hidden text-xs text-faint md:inline">
+                {isVideo(item) ? "视频预览" : "摄影作品"}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="关闭"
+              autoFocus
+              className="apple-glass apple-hairline flex size-10 items-center justify-center text-paper shadow-lg transition-transform duration-100 active:scale-90"
+            >
+              <X size={18} weight="regular" aria-hidden />
+            </button>
+          </div>
+
+          {/* 左右翻页按钮（桌面端：Apple 临界阻尼悬浮微件） */}
           {items.length > 1 && (
             <>
               <button
                 type="button"
                 onClick={() => step(-1)}
                 aria-label="上一张"
-                className="absolute left-4 top-1/2 z-10 hidden size-11 -translate-y-1/2 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur transition-transform duration-100 active:scale-90 md:flex"
+                className="apple-glass apple-hairline absolute left-6 top-1/2 z-20 hidden size-12 -translate-y-1/2 items-center justify-center text-paper shadow-xl transition-all duration-140 hover:bg-white/10 active:scale-90 md:flex"
               >
                 <ArrowLeft size={20} weight="regular" aria-hidden />
               </button>
@@ -100,44 +181,78 @@ export function Lightbox({ items, index, onClose, onNavigate }: Props) {
                 type="button"
                 onClick={() => step(1)}
                 aria-label="下一张"
-                className="absolute right-4 top-1/2 z-10 hidden size-11 -translate-y-1/2 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur transition-transform duration-100 active:scale-90 md:flex"
+                className="apple-glass apple-hairline absolute right-6 top-1/2 z-20 hidden size-12 -translate-y-1/2 items-center justify-center text-paper shadow-xl transition-all duration-140 hover:bg-white/10 active:scale-90 md:flex"
               >
                 <ArrowRight size={20} weight="regular" aria-hidden />
               </button>
             </>
           )}
 
-          <div className="flex flex-1 items-center justify-center overflow-hidden p-4 md:p-10" onClick={onClose}>
-            {isVideo(item) ? (
-              <motion.video
-                key={index}
-                src={item.src}
-                poster={"poster" in item ? item.poster : undefined}
-                className="max-h-full max-w-full"
-                initial={{ opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: "spring", stiffness: 320, damping: 26 }}
-                controls
-                autoPlay
-                onClick={(e) => e.stopPropagation()}
-              />
-            ) : (
-              <motion.img
-                key={index}
-                src={item.src}
-                alt={label(item)}
-                className="max-h-full max-w-full object-contain"
-                initial={{ opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: "spring", stiffness: 320, damping: 26 }}
-                onClick={(e) => e.stopPropagation()}
-              />
-            )}
+          {/* 核心展示区：支持 1:1 跟手拖拽、动量飞出、橡皮筋阻尼回弹 */}
+          <div
+            className="relative z-10 flex flex-1 items-center justify-center overflow-hidden p-4 md:p-10 cursor-grab active:cursor-grabbing"
+            onClick={onClose}
+          >
+            <motion.div
+              key={index}
+              drag={!reduce && !isVideo(item)}
+              dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
+              dragElastic={0.65}
+              onDragEnd={handleDragEnd}
+              style={
+                reduce || isVideo(item)
+                  ? undefined
+                  : {
+                      x: dragX,
+                      y: dragY,
+                      scale: mediaScale,
+                    }
+              }
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              transition={{
+                type: "spring",
+                stiffness: 340,
+                damping: 30,
+              }}
+              className="relative flex max-h-full max-w-full items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {isVideo(item) ? (
+                <video
+                  src={item.src}
+                  poster={"poster" in item ? item.poster : undefined}
+                  className="max-h-[75dvh] max-w-full shadow-2xl"
+                  controls
+                  autoPlay
+                />
+              ) : (
+                <img
+                  src={item.src}
+                  alt={label(item)}
+                  draggable={false}
+                  className="max-h-[75dvh] max-w-full select-none object-contain shadow-2xl"
+                />
+              )}
+            </motion.div>
           </div>
-          <div className="border-t border-line px-4 py-3 text-center">
-            <p className="font-serif text-sm text-paper">{label(item)}</p>
-            <p className="mt-0.5 text-[11px] text-faint">{hint(item)}</p>
-          </div>
+
+          {/* 底部信息栏：Apple Optical Typography 与 Vibrancy 文本 */}
+          <motion.div
+            className="apple-glass apple-hairline-t relative z-20 px-6 py-4 text-center transition-opacity"
+            style={{ opacity: reduce ? 1 : hintOpacity }}
+          >
+            <p className="section-display font-serif text-base font-medium text-paper md:text-lg">
+              {label(item)}
+            </p>
+            {hint(item) ? (
+              <p className="mt-1 text-xs text-muted/90">{hint(item)}</p>
+            ) : null}
+            <p className="micro-label mt-2 text-[10px] text-faint md:hidden">
+              轻扫切图 · 下拉退出
+            </p>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>

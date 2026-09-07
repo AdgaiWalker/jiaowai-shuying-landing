@@ -110,7 +110,59 @@ details[open] .faq-icon {
   transform: rotate(45deg);
 }
 
-/* 全站可点元素统一按压缩反馈（Apple 风格：按下即响应，不等待释放） */
+/* 
+ * ═══ Apple Materials & Depth ═══
+ * - 高饱和度通透模糊：blur(20px) saturate(180%)，内容滚动穿透时颜色依然纯正生动
+ * - 捕光发丝线：模拟真实物理玻璃边缘的折射高光（0.08~0.1 alpha）
+ * - 减弱透明度偏好降级：prefers-reduced-transparency
+ */
+.apple-glass {
+  background-color: rgb(16 17 19 / 0.78);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+.apple-hairline-b {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.apple-hairline-t {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.apple-hairline {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .apple-glass {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background-color: var(--color-ink) !important;
+  }
+}
+
+/*
+ * ═══ Apple Optical Typography ═══
+ * 大字号紧缩字距 (Negative tracking) + 紧凑行高 (Tight leading)
+ * 小字号/微型标签微松字距 (Positive tracking) 保障清晰度
+ */
+.display-title {
+  letter-spacing: -0.028em;
+  line-height: 1.05;
+  font-optical-sizing: auto;
+}
+
+.section-display {
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.micro-label {
+  letter-spacing: 0.06em;
+}
+
+/* 全站可点元素统一按压缩反馈（Apple 风格：按下即响应，物理弹簧时序） */
 button,
 [role="button"],
 a,
@@ -118,18 +170,19 @@ summary,
 input,
 textarea,
 select {
-  transition: transform 120ms ease-out;
+  transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1), opacity 140ms ease;
+  will-change: transform;
 }
 button:active,
 [role="button"]:active,
 a:active,
 summary:active {
-  transform: scale(0.98);
+  transform: scale(0.972);
 }
 /* 主 CTA 用更强的反馈（已有 active:scale，此处做兜底） */
 a[href="#join"],
 button[type="button"] {
-  transition: transform 120ms ease-out;
+  transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1), opacity 140ms ease;
 }
 
 /* 活动类型跑马灯：内容复制一份，translateX -50%→0 实现从左至右无缝漂移 */
