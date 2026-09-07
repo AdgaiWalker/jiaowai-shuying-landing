@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CalendarDots, Camera, SealCheck } from "@phosphor-icons/react";
 import { Lightbox } from "../components/Lightbox";
-import { PhotoSlot } from "../components/PhotoSlot";
+import { CrewPassCard } from "../components/xpbd/CrewPassCard";
 import { Reveal } from "../components/Reveal";
 import { SectionTitle } from "../components/SectionTitle";
 import SpotlightCard from "../components/SpotlightCard";
@@ -18,7 +18,7 @@ export function Highlights() {
           <SectionTitle title="你的履历背书" note="你参与的每一场记录，都将沉淀为可以核实的个人经历与成果证明。" />
         </Reveal>
         <div className="grid gap-4 md:grid-cols-3 md:gap-6">
-          {/* 大格：获奖与背书（证书拼图 + 事实清单，均来自社团提供的证书与成就视频） */}
+          {/* 大格：获奖与背书（实体工作证/聘书翻转卡 + 事实清单） */}
           <Reveal className="md:col-span-2">
             <SpotlightCard
               spotlightColor="rgba(244, 244, 241, 0.10)"
@@ -31,20 +31,7 @@ export function Highlights() {
                 <li className="text-pretty">你的照片将有机会登上《黑河日报》专题版面并获得个人署名供稿。</li>
                 <li className="text-pretty">你的航拍与创作成果将直接被学校职能部门采纳留档。</li>
               </ul>
-              <button
-                type="button"
-                onClick={() => setCertOpen(true)}
-                aria-label="查看证书大图"
-                className="relative mt-4 flex-1 cursor-zoom-in transition-transform duration-100 active:scale-[0.99]"
-              >
-                <PhotoSlot spec={awardImage} />
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute bottom-2 right-2 bg-ink/80 px-2 py-1 text-[10px] text-paper/90"
-                >
-                  点开可放大
-                </span>
-              </button>
+              <CrewPassCard awardImage={awardImage} onOpenZoom={() => setCertOpen(true)} />
             </SpotlightCard>
           </Reveal>
           {/* 右列大格：作品上官方平台（琥珀底，网格内的色彩变化格） */}

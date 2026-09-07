@@ -1,9 +1,9 @@
-import { PhotoSlot } from "../components/PhotoSlot";
+import { DarkroomHangingPhoto } from "../components/xpbd/DarkroomHangingPhoto";
 import { Reveal } from "../components/Reveal";
 import { SectionTitle } from "../components/SectionTitle";
 import { aboutImage, site } from "../config/site";
 
-/** S3 关于我们：桌面端 7/5 非对称分栏（文字 + 配图），移动端单列 */
+/** S3 关于我们：桌面端 7/5 非对称分栏（文字 + 暗房悬挂相纸），移动端单列 */
 export function About() {
   return (
     <section id="about" className="py-20 md:py-28">
@@ -29,7 +29,7 @@ export function About() {
             </div>
           </Reveal>
           <Reveal delay={0.1} className="md:col-span-5">
-            <PhotoSlot spec={aboutImage} />
+            <DarkroomHangingPhoto spec={aboutImage} />
           </Reveal>
         </div>
       </div>

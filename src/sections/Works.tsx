@@ -1,6 +1,6 @@
 import { useState } from "react";
 import InfiniteSpiral from "../components/InfiniteSpiral";
-import { InlineVideo } from "../components/InlineVideo";
+import { FilmReelStrip } from "../components/xpbd/FilmReelStrip";
 import { Lightbox } from "../components/Lightbox";
 import { Reveal } from "../components/Reveal";
 import { SectionTitle } from "../components/SectionTitle";
@@ -9,7 +9,7 @@ import { douyinUrl, works } from "../config/site";
 /**
  * S7 作品区：
  * 1. 3D 空间垂直螺旋画廊：自动持续循环旋转、拖拽交互、景深失焦、点击进入全屏灯箱；
- * 2. 精选短片内联播放（社团成就混剪）+ 抖音入口。
+ * 2. 候选 3：35mm 机械过片分镜胶片帘 (XPBD 链式传动与惯性卡位) + 精选长片播放。
  */
 export function Works() {
   const [active, setActive] = useState<number | null>(null);
@@ -56,28 +56,22 @@ export function Works() {
         />
       </div>
 
-      <div className="mx-auto max-w-6xl px-4 md:px-6 mt-6">
+      {/* 候选 3：35mm 机械过片胶片舱 */}
+      <div className="mx-auto max-w-6xl px-4 md:px-6 mt-8">
         <Reveal>
-          <div className="border border-line bg-ink-soft p-4 md:p-5">
-            <InlineVideo />
-            <div className="mt-4 flex flex-wrap items-baseline justify-between gap-2">
-              <div>
-                <p className="font-serif text-base text-paper">你参与制作的影像长片</p>
-                <p className="mt-0.5 text-xs text-muted">
-                  从分镜构思、实地掌镜到后期调色，你将在社团完整经历一部短片的诞生与发表。
-                </p>
-              </div>
-              <p className="text-xs text-faint">
-                更多短片在抖音：
-                {douyinUrl ? (
-                  <a href={douyinUrl} className="text-accent underline underline-offset-4">
-                    在抖音打开
-                  </a>
-                ) : (
-                  "抖音号二维码见下方「加入我们」"
-                )}
-              </p>
-            </div>
+          <FilmReelStrip />
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-muted">
+            <span>社团影视组 · 从分镜构思、实地掌镜到后期调色完整历程</span>
+            <p className="text-xs text-faint">
+              更多短片：
+              {douyinUrl ? (
+                <a href={douyinUrl} className="text-accent underline underline-offset-4">
+                  在抖音打开
+                </a>
+              ) : (
+                "抖音号二维码见下方「加入我们」"
+              )}
+            </p>
           </div>
         </Reveal>
       </div>

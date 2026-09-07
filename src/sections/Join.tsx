@@ -1,10 +1,11 @@
 import { Reveal } from "../components/Reveal";
+import { DarkroomDevPaper } from "../components/xpbd/DarkroomDevPaper";
 import { contact, qrs } from "../config/site";
 
 /**
- * S9 加入我们（转化收口）。手机上没法用相机扫自己屏幕里的码，
- * 微信内唯一路径是长按识别——所以微信群码做成全宽主卡放大码体，
- * 配「长按识别」提示；公众号 / 抖音为次级通道收在两列小格。
+ * S9 加入我们（转化收口）。
+ * 候选 2：暗房显影浸盘与潜影相纸 (XPBD 晃动流体阻尼与化学还原显影)；
+ * 显影完成后提供清晰二维码图片供微信直接长按识别扫码进群；公众号/抖音收在两列小格。
  */
 export function Join() {
   const primary = qrs.find((q) => q.key === "wx") ?? qrs[0];
@@ -35,33 +36,8 @@ export function Join() {
             </dl>
           </Reveal>
           <Reveal delay={0.08} className="md:col-span-7">
-            {/* 主通道：微信群码，全宽主卡 + 长按识别提示 */}
-            <div className="border border-accent/30 bg-accent/5 p-4 md:p-5">
-              <div className="flex items-center gap-4">
-                {primary.src ? (
-                  <img
-                    src={primary.src}
-                    alt={`${primary.label}二维码`}
-                    loading="lazy"
-                    className="size-36 shrink-0 bg-white object-contain p-1 sm:size-44 md:size-48"
-                  />
-                ) : (
-                  <div
-                    role="img"
-                    aria-label={`素材位：${primary.label}二维码`}
-                    className="flex size-36 shrink-0 flex-col items-center justify-center gap-1 border border-dashed border-faint/70 px-2 text-center sm:size-44 md:size-48"
-                  >
-                    <span className="text-[10px] tracking-[0.3em] text-faint">素材位</span>
-                    <span className="text-xs text-paper">{primary.label}</span>
-                  </div>
-                )}
-                <div>
-                  <p className="font-serif text-lg">{primary.label}</p>
-                  <p className="mt-1 text-xs text-muted">{primary.note}</p>
-                  <p className="mt-3 text-xs font-medium text-accent">长按二维码，识别后进群</p>
-                </div>
-              </div>
-            </div>
+            {/* 主通道：暗房显影浸盘与潜影相纸 (XPBD 晃动/提拉显影) */}
+            <DarkroomDevPaper primary={primary} />
             {/* 次级通道：公众号 / 抖音 */}
             <ul className="mt-4 grid grid-cols-2 gap-4">
               {secondary.map((qr) => (
