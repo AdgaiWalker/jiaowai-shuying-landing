@@ -50,10 +50,10 @@ export const heroSlides: string[] = [
   "/photos/hero-4.jpg",
 ];
 
-/* ── 首屏背景音乐（可选）──
- * 放一首循环纯音乐到 public/audio/bgm.mp3（建议 ≤1MB），
- * 然后把 null 改成 "/audio/bgm.mp3"，首屏右下角喇叭按钮即自动生效（记住用户偏好）。 */
-export const heroMusic: string | null = "/audio/bgm.mp3";
+/* ── 首屏背景音乐 ──
+ * 选定曲目：《Snowfall》（雪落）by Scott Buckley (CC-BY 4.0)
+ * 75秒高保真 Web 循环切片，首尾平滑淡入淡出，体积 ~908KB */
+export const heroMusic: string | null = "/audio/snowfall.m4a";
 
 /* ── 数字带：落在你身上的事实 ── */
 
