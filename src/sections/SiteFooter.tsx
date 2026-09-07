@@ -17,8 +17,8 @@ export function SiteFooter() {
 
           <div className="text-xs text-faint md:text-right">
             <p>© {new Date().getFullYear()} {site.name} · All rights reserved.</p>
-            <p className="mt-1 text-[11px] text-faint/80">
-              黑河学院 焦外述影社团 官方门户
+            <p className="mt-0.5 text-[10px] text-faint/60">
+              BGM: "Snowfall" by Scott Buckley (CC-BY 4.0)
             </p>
           </div>
         </div>
