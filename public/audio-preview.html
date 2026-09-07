@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>焦外述影 · BGM 候选曲目试听室</title>
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --card-bg: #141417;
+      --border: #26262b;
+      --accent: #e5484d;
+      --accent-soft: rgba(229, 72, 77, 0.15);
+      --text: #f4f4f1;
+      --muted: #8e8e93;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Serif SC", serif;
+      padding: 32px 16px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 36px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-family: monospace;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid rgba(229,72,77,0.3);
+      padding: 3px 8px;
+      border-radius: 2px;
+      margin-bottom: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: 26px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    p.intro {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 580px;
+    }
+    .track-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .track-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 20px;
+      border-radius: 4px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .track-card:hover {
+      border-color: rgba(229,72,77,0.4);
+    }
+    .track-card.playing {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(229,72,77,0.15);
+    }
+    .track-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+    .track-title-group h2 {
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tag {
+      font-size: 11px;
+      font-family: monospace;
+      padding: 2px 6px;
+      border-radius: 2px;
+      background: #1f1f24;
+      color: var(--muted);
+    }
+    .tag.recommend {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    .track-artist {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .track-desc {
+      font-size: 13px;
+      color: #c2c2bd;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .audio-player-box {
+      background: #09090b;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      border-radius: 4px;
+    }
+    .version-switch {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .version-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 4px 10px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.15s;
+    }
+    .version-btn.active {
+      background: #26262b;
+      color: var(--text);
+      border-color: #4a4a55;
+    }
+    audio {
+      width: 100%;
+      height: 36px;
+      outline: none;
+    }
+    .track-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: monospace;
+    }
+    .back-btn {
+      margin-top: 36px;
+      display: inline-block;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 13px;
+      border: 1px solid rgba(229,72,77,0.3);
+      padding: 8px 16px;
+      background: var(--accent-soft);
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="badge">BGM Selection Room</span>
+      <h1>焦外述影 · 背景音乐试听室</h1>
+      <p class="intro">
+        为落地页定制的免版税（Creative Commons）电影质感音乐。所有曲目均提供「落地页专用 75s 平滑微循环版」与「完整原曲版」，点击即可在线直接试听。
+      </p>
+    </header>
+
+    <div class="track-list">
+      <!-- 曲目 1：Snowfall -->
+      <div class="track-card playing-target" id="card-1">
+        <div class="track-header">
+          <div class="track-title-group">
+            <h2>1. Snowfall（雪落） <span class="tag recommend">推荐首选</span></h2>
+            <div class="track-artist">Scott Buckley · CC-BY 4.0 国际许可 · 钢琴/空间弦乐</div>
+          </div>
+        </div>
+        <p class="track-desc">
+          <strong>意境契合：</strong>创作者在北欧极夜雪季创作，空灵、克制、纯净。极其契合黑河极北边境、界江破冰晨光与零下三十度雪夜暖光的静谧氛围，丝毫不抢眼。
+        </p>
+        <div class="audio-player-box">
+          <div class="version-switch">
+            <button class="version-btn active" onclick="switchVer(1, '/audio/snowfall.m4a', '75s 落地页精剪循环版 (908KB)')">75s 落地页精简版 (908KB)</button>
+            <button class="version-btn" onclick="switchVer(1, '/audio/snowfall-full.mp3', '完整原曲 4分08秒 (9.5MB)')">完整原曲 (9.5MB)</button>
+          </div>
+          <audio id="audio-1" controls preload="metadata" src="/audio/snowfall.m4a"></audio>
+          <div class="track-footer">
+            <span id="label-1">当前音轨：75s 落地页精剪循环版 (908KB)</span>
+            <span>建议用于：Hero首屏至全站</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 曲目 2：Filaments -->
+      <div class="track-card" id="card-2">
+        <div class="track-header">
+          <div class="track-title-group">
+            <h2>2. Filaments（光丝 / 焦外光芒） <span class="tag recommend">电影叙事感</span></h2>
+            <div class="track-artist">Scott Buckley · CC-BY 4.0 国际许可 · 原声钢琴/温情弦乐</div>
+          </div>
+        </div>
+        <p class="track-desc">
+          <strong>意境契合：</strong>温润而深情的钢琴长音，随后渐进式融入大提琴。非常像一部高质量校园青春纪实片，对应“在焦点之外，讲述光影”与“从零基础到展廊中央放上你的成片”。
+        </p>
+        <div class="audio-player-box">
+          <div class="version-switch">
+            <button class="version-btn active" onclick="switchVer(2, '/audio/filaments.m4a', '75s 落地页精剪循环版 (915KB)')">75s 落地页精简版 (915KB)</button>
+            <button class="version-btn" onclick="switchVer(2, '/audio/filaments-full.mp3', '完整原曲 5分39秒 (13MB)')">完整原曲 (13MB)</button>
+          </div>
+          <audio id="audio-2" controls preload="metadata" src="/audio/filaments.m4a"></audio>
+          <div class="track-footer">
+            <span id="label-2">当前音轨：75s 落地页精剪循环版 (915KB)</span>
+            <span>建议用于：微电影与探索感</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 曲目 3：Gymnopédie No. 1 -->
+      <div class="track-card" id="card-3">
+        <div class="track-header">
+          <div class="track-title-group">
+            <h2>3. Gymnopédie No. 1（吉诺佩蒂第一号） <span class="tag">法式暗房沙龙</span></h2>
+            <div class="track-artist">Erik Satie / Kevin MacLeod · 公有领域 (Public Domain) · 经典钢琴</div>
+          </div>
+        </div>
+        <p class="track-desc">
+          <strong>意境契合：</strong>摄影界、经典黑白影展与暗房湿印的永恒经典。舒缓优雅的 3/4 拍，带来浓郁的胶片研习社与人文纪实底蕴。
+        </p>
+        <div class="audio-player-box">
+          <div class="version-switch">
+            <button class="version-btn active" onclick="switchVer(3, '/audio/gymnopedie.m4a', '75s 落地页精剪循环版 (877KB)')">75s 落地页精简版 (877KB)</button>
+            <button class="version-btn" onclick="switchVer(3, '/audio/gymnopedie-full.mp3', '完整原曲 3分07秒 (7.1MB)')">完整原曲 (7.1MB)</button>
+          </div>
+          <audio id="audio-3" controls preload="metadata" src="/audio/gymnopedie.m4a"></audio>
+          <div class="track-footer">
+            <span id="label-3">当前音轨：75s 落地页精剪循环版 (877KB)</span>
+            <span>建议用于：复古胶片感</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 曲目 4：That Zen Moment -->
+      <div class="track-card" id="card-4">
+        <div class="track-header">
+          <div class="track-title-group">
+            <h2>4. That Zen Moment（沉静禅意） <span class="tag">极简垫音</span></h2>
+            <div class="track-artist">Kevin MacLeod · CC-BY 4.0 · 纯环境氛围垫</div>
+          </div>
+        </div>
+        <p class="track-desc">
+          <strong>意境契合：</strong>原项目预留的音轨，已由 12MB 精剪压缩。几乎没有跳动的旋律，如水般平缓流淌，完全隐形。
+        </p>
+        <div class="audio-player-box">
+          <div class="version-switch">
+            <button class="version-btn active" onclick="switchVer(4, '/audio/zen.m4a', '75s 落地页精剪循环版 (886KB)')">75s 落地页精简版 (886KB)</button>
+            <button class="version-btn" onclick="switchVer(4, '/audio/zen-full.mp3', '完整原曲 10分01秒 (11.5MB)')">完整原曲 (11.5MB)</button>
+          </div>
+          <audio id="audio-4" controls preload="metadata" src="/audio/zen.m4a"></audio>
+          <div class="track-footer">
+            <span id="label-4">当前音轨：75s 落地页精剪循环版 (886KB)</span>
+            <span>建议用于：极致沉静隐形</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a href="/" class="back-btn">← 返回落地页首页</a>
+  </div>
+
+  <script>
+    const audios = document.querySelectorAll('audio');
+    audios.forEach((a, idx) => {
+      a.addEventListener('play', () => {
+        audios.forEach((other) => {
+          if (other !== a) other.pause();
+        });
+        document.querySelectorAll('.track-card').forEach((c, cIdx) => {
+          if (cIdx === idx) c.classList.add('playing');
+          else c.classList.remove('playing');
+        });
+      });
+      a.addEventListener('pause', () => {
+        document.querySelectorAll('.track-card')[idx]?.classList.remove('playing');
+      });
+    });
+
+    function switchVer(trackNum, url, labelText) {
+      const audio = document.getElementById(`audio-${trackNum}`);
+      const label = document.getElementById(`label-${trackNum}`);
+      const card = document.getElementById(`card-${trackNum}`);
+      const btns = card.querySelectorAll('.version-btn');
+      
+      btns.forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const wasPlaying = !audio.paused;
+      audio.src = url;
+      label.textContent = '当前音轨：' + labelText;
+      if (wasPlaying) {
+        audio.play();
+      }
+    }
+  </script>
+</body>
+</html>
