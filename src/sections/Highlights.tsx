@@ -35,7 +35,7 @@ export function Highlights() {
                 type="button"
                 onClick={() => setCertOpen(true)}
                 aria-label="查看证书大图"
-                className="relative mt-4 flex-1 cursor-zoom-in"
+                className="relative mt-4 flex-1 cursor-zoom-in transition-transform duration-100 active:scale-[0.99]"
               >
                 <PhotoSlot spec={awardImage} />
                 <span

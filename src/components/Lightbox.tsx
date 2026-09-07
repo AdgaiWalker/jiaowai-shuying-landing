@@ -66,7 +66,7 @@ export function Lightbox({ items, index, onClose, onNavigate }: Props) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
           onTouchStart={(e) => {
             touchStartX.current = e.touches[0].clientX;
           }}
@@ -82,7 +82,7 @@ export function Lightbox({ items, index, onClose, onNavigate }: Props) {
             onClick={onClose}
             aria-label="关闭"
             autoFocus
-            className="absolute right-4 top-4 z-10 flex size-11 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur"
+            className="absolute right-4 top-4 z-10 flex size-11 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur transition-transform duration-100 active:scale-90"
           >
             <X size={20} weight="regular" aria-hidden />
           </button>
@@ -92,7 +92,7 @@ export function Lightbox({ items, index, onClose, onNavigate }: Props) {
                 type="button"
                 onClick={() => step(-1)}
                 aria-label="上一张"
-                className="absolute left-4 top-1/2 z-10 hidden size-11 -translate-y-1/2 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur md:flex"
+                className="absolute left-4 top-1/2 z-10 hidden size-11 -translate-y-1/2 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur transition-transform duration-100 active:scale-90 md:flex"
               >
                 <ArrowLeft size={20} weight="regular" aria-hidden />
               </button>
@@ -100,7 +100,7 @@ export function Lightbox({ items, index, onClose, onNavigate }: Props) {
                 type="button"
                 onClick={() => step(1)}
                 aria-label="下一张"
-                className="absolute right-4 top-1/2 z-10 hidden size-11 -translate-y-1/2 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur md:flex"
+                className="absolute right-4 top-1/2 z-10 hidden size-11 -translate-y-1/2 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur transition-transform duration-100 active:scale-90 md:flex"
               >
                 <ArrowRight size={20} weight="regular" aria-hidden />
               </button>

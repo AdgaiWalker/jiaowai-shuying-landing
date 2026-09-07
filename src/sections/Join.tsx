@@ -43,13 +43,13 @@ export function Join() {
                     src={primary.src}
                     alt={`${primary.label}二维码`}
                     loading="lazy"
-                    className="size-40 shrink-0 bg-white object-contain p-1 md:size-48"
+                    className="size-36 shrink-0 bg-white object-contain p-1 sm:size-44 md:size-48"
                   />
                 ) : (
                   <div
                     role="img"
                     aria-label={`素材位：${primary.label}二维码`}
-                    className="flex size-40 shrink-0 flex-col items-center justify-center gap-1 border border-dashed border-faint/70 px-2 text-center md:size-48"
+                    className="flex size-36 shrink-0 flex-col items-center justify-center gap-1 border border-dashed border-faint/70 px-2 text-center sm:size-44 md:size-48"
                   >
                     <span className="text-[10px] tracking-[0.3em] text-faint">素材位</span>
                     <span className="text-xs text-paper">{primary.label}</span>

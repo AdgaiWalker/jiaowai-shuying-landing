@@ -120,7 +120,7 @@ export function HeroCarousel() {
       />
 
       {/* 胶片帧格指示 + 背景音乐开关 */}
-      <div className="absolute bottom-24 right-4 z-20 flex items-center gap-2 md:bottom-6 md:right-6">
+      <div className="absolute bottom-7 right-4 z-20 flex items-center gap-2 md:bottom-6 md:right-6">
         {heroSlides.map((_, i) => (
           <button
             key={i}
@@ -128,7 +128,7 @@ export function HeroCarousel() {
             onClick={() => cut(i)}
             aria-label={`跳到第 ${i + 1} 帧`}
             aria-current={i === active}
-            className={`h-3 w-5 border transition-colors ${
+            className={`h-3 w-5 border transition-all duration-100 active:scale-90 ${
               i === active ? "border-paper bg-paper/80" : "border-paper/40 hover:bg-paper/20"
             }`}
           />
@@ -140,7 +140,7 @@ export function HeroCarousel() {
           aria-pressed={musicOn}
           aria-disabled={!heroMusic}
           title={heroMusic ? undefined : "背景音乐待接入：放入 public/audio/bgm.mp3 并在 site.ts 填入路径"}
-          className={`ml-1 flex size-8 items-center justify-center border border-paper/40 text-paper/80 backdrop-blur ${
+          className={`ml-1 flex size-8 items-center justify-center border border-paper/40 text-paper/80 backdrop-blur transition-transform duration-100 active:scale-90 ${
             heroMusic ? "" : "opacity-40"
           }`}
         >

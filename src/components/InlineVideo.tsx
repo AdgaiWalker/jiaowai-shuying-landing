@@ -57,7 +57,7 @@ export function InlineVideo() {
             type="button"
             onClick={() => setLightboxOpen(true)}
             aria-label="全屏查看视频"
-            className="flex size-10 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur"
+            className="flex size-10 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur transition-transform duration-100 active:scale-90"
           >
             <ArrowsOutSimple size={18} weight="regular" aria-hidden />
           </button>
@@ -65,7 +65,7 @@ export function InlineVideo() {
             type="button"
             onClick={toggleMute}
             aria-label={muted ? "开启声音" : "静音"}
-            className="flex size-10 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur"
+            className="flex size-10 items-center justify-center border border-paper/30 bg-ink/70 text-paper backdrop-blur transition-transform duration-100 active:scale-90"
           >
             {muted ? (
               <SpeakerSlash size={18} weight="regular" aria-hidden />
