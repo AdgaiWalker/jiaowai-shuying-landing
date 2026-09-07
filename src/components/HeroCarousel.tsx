@@ -18,14 +18,17 @@ export function HeroCarousel() {
   const reduce = useReducedMotion();
   const [active, setActive] = useState(0);
   const [blink, setBlink] = useState(false);
-  const [musicOn, setMusicOn] = useState(false);
+  // 默认开启背景音乐（除非用户此前明确关闭过）
+  const [musicOn, setMusicOn] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem(MUSIC_KEY) !== "off";
+  });
   const activeRef = useRef(0);
   const busy = useRef(false);
   const timers = useRef<number[]>([]);
   const musicRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    if (heroMusic && localStorage.getItem(MUSIC_KEY) === "on") setMusicOn(true);
     const pending = timers.current;
     return () => pending.forEach(clearTimeout);
   }, []);
@@ -57,17 +60,49 @@ export function HeroCarousel() {
     return () => window.clearInterval(t);
   }, [cut, reduce]);
 
-  // 浏览器要求用户手势后才能出声：恢复了「开」的偏好时，等第一次触摸再起播
+  // 默认播放与手势解锁逻辑（兼容 Chrome、iOS Safari 及微信内置浏览器）
   useEffect(() => {
     if (!heroMusic || !musicOn) return;
     const el = musicRef.current;
-    if (!el || !el.paused) return;
-    const start = () => {
-      el.volume = 0.35;
-      void el.play().catch(() => {});
+    if (!el) return;
+
+    el.volume = 0.35;
+
+    // 1. 尝试直接起播
+    const tryPlay = () => {
+      if (!el.paused) return;
+      el.play().catch(() => {
+        // 浏览器受限于自动播放策略，等待全局手势触发
+      });
     };
-    window.addEventListener("pointerdown", start, { once: true });
-    return () => window.removeEventListener("pointerdown", start);
+
+    tryPlay();
+
+    // 2. 微信内置浏览器特有 Bridge 机制（支持无需手势直接自动播放）
+    const onWeixinReady = () => {
+      tryPlay();
+    };
+    // @ts-expect-error WeixinJSBridge injected by WeChat
+    if (typeof window.WeixinJSBridge !== "undefined") {
+      // @ts-expect-error WeixinJSBridge injected by WeChat
+      window.WeixinJSBridge.invoke("getNetworkType", {}, tryPlay);
+    } else {
+      document.addEventListener("WeixinJSBridgeReady", onWeixinReady, { once: true });
+    }
+
+    // 3. 任意首个用户手势（触摸、划屏、点击、按键）触发解锁起播
+    const unlockEvents = ["pointerdown", "touchstart", "scroll", "keydown"];
+    const unlock = () => {
+      tryPlay();
+      unlockEvents.forEach((evt) => window.removeEventListener(evt, unlock));
+    };
+
+    unlockEvents.forEach((evt) => window.addEventListener(evt, unlock, { once: true, passive: true }));
+
+    return () => {
+      document.removeEventListener("WeixinJSBridgeReady", onWeixinReady);
+      unlockEvents.forEach((evt) => window.removeEventListener(evt, unlock));
+    };
   }, [musicOn]);
 
   const toggleMusic = () => {
@@ -153,7 +188,7 @@ export function HeroCarousel() {
       </div>
 
       {heroMusic ? (
-        <audio ref={musicRef} src={heroMusic} loop preload="none" hidden />
+        <audio ref={musicRef} src={heroMusic} loop preload="auto" hidden />
       ) : null}
     </div>
   );
