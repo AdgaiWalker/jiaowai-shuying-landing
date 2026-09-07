@@ -1,30 +1,27 @@
-import { Plus } from "@phosphor-icons/react";
 import { Reveal } from "../components/Reveal";
 import { SectionTitle } from "../components/SectionTitle";
 import { faqs } from "../config/site";
 
-/** S8 新生常问：原生 details 手风琴，答案为初稿占位，上线前由社长确认 */
+/** S8 入社细则陈述：全部直接平铺展示，无需点击展开 */
 export function Faq() {
   return (
     <section id="faq" className="bg-ink-soft py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
-        <div className="mx-auto max-w-3xl">
-          <Reveal>
-            <SectionTitle title="入社细则陈述" note="规章与流程保持完全透明，消除你在加入前的一切疑虑。" />
-          </Reveal>
-          <Reveal delay={0.06}>
-            <div>
-              {faqs.map((f) => (
-                <details key={f.q} className="border-b border-line/70 py-4">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-serif text-base text-paper md:text-lg [&::-webkit-details-marker]:hidden">
-                    {f.q}
-                    <Plus size={18} weight="regular" className="faq-icon shrink-0 text-accent" aria-hidden />
-                  </summary>
-                  <p className="mt-3 text-sm leading-relaxed text-muted">{f.a}</p>
-                </details>
-              ))}
-            </div>
-          </Reveal>
+        <Reveal>
+          <SectionTitle title="入社细则陈述" note="规章与流程保持完全透明，消除你在加入前的一切疑虑。" />
+        </Reveal>
+        <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+          {faqs.map((f, i) => (
+            <Reveal key={f.q} delay={i * 0.04}>
+              <div className="flex h-full flex-col border border-line bg-ink p-5 md:p-6">
+                <div className="flex items-center gap-2.5">
+                  <span className="font-mono text-xs text-accent">0{i + 1}</span>
+                  <h3 className="font-serif text-base font-medium text-paper md:text-lg">{f.q}</h3>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-muted">{f.a}</p>
+              </div>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>
