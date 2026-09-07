@@ -15,7 +15,7 @@ export function Highlights() {
     <section id="highlights" className="py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <Reveal>
-          <SectionTitle title="我们的底气" note="不空谈兴趣，用可以核实的事实说话。" />
+          <SectionTitle title="你的履历背书" note="你参与的每一场记录，都将沉淀为可以核实的个人经历与成果证明。" />
         </Reveal>
         <div className="grid gap-4 md:grid-cols-3 md:gap-6">
           {/* 大格：获奖与背书（证书拼图 + 事实清单，均来自社团提供的证书与成就视频） */}
@@ -24,12 +24,12 @@ export function Highlights() {
               spotlightColor="rgba(244, 244, 241, 0.10)"
               className="flex h-full flex-col border border-line bg-ink-soft p-5 md:p-6"
             >
-              <h3 className="font-serif text-xl">获奖与背书</h3>
+              <h3 className="font-serif text-xl">官方规格的项目履历</h3>
               <ul className="mt-3 space-y-1.5 text-sm leading-relaxed text-muted">
-                <li className="text-pretty">两届中俄交流活动宣传工作「先进集体」（党委宣传统战部）</li>
-                <li className="text-pretty">作品多次被团省委、省共青团官方账号转发</li>
-                <li className="text-pretty">照片登上《黑河日报》专题版面，获署名供稿</li>
-                <li className="text-pretty">校园全景航拍被学校后勤管理处采纳</li>
+                <li className="text-pretty">你将承担重大盛会宣传记录工作，持有官方工作凭证与聘书。</li>
+                <li className="text-pretty">你的成片将参与向团省委及各级官方媒体的选送推荐。</li>
+                <li className="text-pretty">你的照片将有机会登上《黑河日报》专题版面并获得个人署名供稿。</li>
+                <li className="text-pretty">你的航拍与创作成果将直接被学校职能部门采纳留档。</li>
               </ul>
               <button
                 type="button"
@@ -51,9 +51,9 @@ export function Highlights() {
           <Reveal delay={0.08} className="md:row-span-2">
             <div className="flex h-full flex-col border border-accent/30 bg-accent/10 p-5 md:p-6">
               <SealCheck size={26} weight="regular" className="text-accent" aria-hidden />
-              <h3 className="mt-4 font-serif text-lg">作品上官方平台</h3>
+              <h3 className="mt-4 font-serif text-lg">作品直达官方平台</h3>
               <p className="mt-2 text-pretty text-sm leading-relaxed text-muted">
-                优秀作品可推荐至学校官方平台发表，让照片和短片被全校看见。
+                你在社团完成的优秀摄影与短片作品，将由社团推荐至学校官方新媒体矩阵，被全校师生共同关注。
               </p>
             </div>
           </Reveal>
@@ -63,9 +63,9 @@ export function Highlights() {
               className="h-full border border-line bg-ink-soft p-5 md:p-6"
             >
               <Camera size={26} weight="regular" className="text-accent" aria-hidden />
-              <h3 className="mt-4 font-serif text-lg">专业设备资源</h3>
+              <h3 className="mt-4 font-serif text-lg">器材向你全员开放</h3>
               <p className="mt-2 text-pretty text-sm leading-relaxed text-muted">
-                相机、镜头、灯光、稳定器，成员可借用创作。
+                微单机身、定焦人像头、长焦镜头、航拍无人机与稳定器，均向你提供无偿借用支持。
               </p>
             </SpotlightCard>
           </Reveal>
@@ -75,9 +75,9 @@ export function Highlights() {
               className="h-full border border-line bg-ink-soft p-5 md:p-6"
             >
               <CalendarDots size={26} weight="regular" className="text-accent" aria-hidden />
-              <h3 className="mt-4 font-serif text-lg">往期活动丰富</h3>
+              <h3 className="mt-4 font-serif text-lg">四季实践常年在线</h3>
               <p className="mt-2 text-pretty text-sm leading-relaxed text-muted">
-                微电影大赛、校园摄影月赛、读书分享会、主题外拍，全年不断。
+                你将加入微电影拍摄组、月度摄影主题巡展、技能研习社与户外实战采风，实践从未停滞。
               </p>
             </SpotlightCard>
           </Reveal>

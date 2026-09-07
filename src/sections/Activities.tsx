@@ -13,8 +13,8 @@ export function Activities() {
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <Reveal>
           <SectionTitle
-            title="我们把黑河拍成了四季"
-            note="外拍、跟拍、课堂、影展、短片，这些活动的足迹，先从镜头里的四季看起。"
+            title="你眼里的黑河四季"
+            note="四月樱花、江畔长昼、秋日金黄与雪夜暖灯，都将成为你大学四年里掌镜定格的画卷。"
           />
         </Reveal>
         <Reveal>

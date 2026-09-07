@@ -10,7 +10,7 @@ export function Faq() {
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <div className="mx-auto max-w-3xl">
           <Reveal>
-            <SectionTitle title="新生常问" />
+            <SectionTitle title="入社细则陈述" note="规章与流程保持完全透明，消除你在加入前的一切疑虑。" />
           </Reveal>
           <Reveal delay={0.06}>
             <div>

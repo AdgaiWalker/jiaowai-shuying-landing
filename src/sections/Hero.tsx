@@ -72,7 +72,12 @@ export function Hero() {
             className="mt-4 font-serif text-lg text-paper/90 md:text-xl"
           />
         )}
-        <Reveal delay={0.15}>
+        <Reveal delay={0.12}>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted md:text-base">
+            你的大学四年，不会只是往返于宿舍、食堂与课堂。
+          </p>
+        </Reveal>
+        <Reveal delay={0.18}>
           <div className="mt-8 flex flex-wrap gap-3">
             <a
               href="#join"

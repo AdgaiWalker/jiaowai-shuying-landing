@@ -15,13 +15,13 @@ export function Join() {
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <Reveal>
           {/* 眉标：本页第 2 处，克制使用 */}
-          <p className="text-xs tracking-[0.25em] text-accent">长期开放 · 随时欢迎</p>
-          <h2 className="mt-4 font-serif text-3xl font-semibold md:text-4xl">扫码加入焦外述影</h2>
+          <p className="text-xs tracking-[0.25em] text-accent">通道长期开启 · 随时进入</p>
+          <h2 className="mt-4 font-serif text-3xl font-semibold md:text-4xl">你的光影生活从这里开始</h2>
         </Reveal>
         <div className="mt-10 grid gap-10 md:grid-cols-12 md:gap-12">
           <Reveal className="md:col-span-5">
             <p className="max-w-[30em] text-pretty leading-relaxed text-muted">
-              进群认识大家，第一时间获取外拍、课堂与影展的消息。也可以先关注公众号和抖音，看一段时间再决定。
+              进群后，你将第一时间获取外拍通知、技能研习安排与设备借调流程。这里是你未来四年的影像根据地。
             </p>
             <dl className="mt-8 space-y-3 text-sm">
               <div className="flex gap-3">

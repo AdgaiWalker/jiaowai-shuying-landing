@@ -21,12 +21,12 @@ export function Works() {
         <Reveal>
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <SectionTitle
-              title="作品说话"
-              note="在焦点之外，讲述光影。3D 空间自动回旋展廊，点击任意一张进入全屏细览。"
+              title="作品是最终的对照"
+              note="这里的每一幅画面，都出自曾经和你一样的零基础新生。一年之后，展廊中央会放上你的成片。"
             />
             <div className="flex items-center gap-2 text-xs text-muted">
               <span className="inline-block size-2 rounded-full bg-accent animate-pulse" />
-              <span>自动循环巡展 · 点击放大</span>
+              <span>自动循环巡展 · 点击进入全屏细览</span>
             </div>
           </div>
         </Reveal>
@@ -62,9 +62,9 @@ export function Works() {
             <InlineVideo />
             <div className="mt-4 flex flex-wrap items-baseline justify-between gap-2">
               <div>
-                <p className="font-serif text-base text-paper">动态影像作品</p>
+                <p className="font-serif text-base text-paper">你参与制作的影像长片</p>
                 <p className="mt-0.5 text-xs text-muted">
-                  社团成就混剪：团省委三次转发、学校采纳证明、历届活动年表
+                  从分镜构思、实地掌镜到后期调色，你将在社团完整经历一部短片的诞生与发表。
                 </p>
               </div>
               <p className="text-xs text-faint">

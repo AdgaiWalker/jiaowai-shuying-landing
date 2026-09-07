@@ -9,7 +9,7 @@ export function About() {
     <section id="about" className="py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <Reveal>
-          <SectionTitle title="我们是谁" />
+          <SectionTitle title="你与这片光影" />
         </Reveal>
         <div className="grid gap-10 md:grid-cols-12 md:gap-12">
           <Reveal className="md:col-span-7">
