@@ -3,7 +3,7 @@ import { site } from "../config/site";
 const links = [
   { href: "#about", label: "关于" },
   { href: "#highlights", label: "亮点" },
-  { href: "#works", label: "作品" },
+  { href: "#works", label: "流体相册" },
   { href: "#faq", label: "常问" },
 ];
 

@@ -87,9 +87,10 @@ export function Hero() {
             </a>
             <a
               href="#works"
-              className="border border-white/20 bg-white/[0.03] px-6 py-3 text-sm text-paper/90 backdrop-blur-sm transition-all hover:border-white/50 active:scale-[0.96]"
+              className="flex items-center gap-1.5 border border-white/20 bg-white/[0.03] px-6 py-3 text-sm text-paper/90 backdrop-blur-sm transition-all hover:border-white/50 active:scale-[0.96]"
             >
-              看作品
+              <span>浏览流体相册</span>
+              <span className="text-[11px] text-accent"></span>
             </a>
           </div>
         </Reveal>
