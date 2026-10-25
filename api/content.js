@@ -105,7 +105,8 @@ export default async function handler(req, res) {
       if (action === "upload") {
         const path = String(body.path || "");
         const ext = (path.split(".").pop() || "").toLowerCase();
-        const okPath = MEDIA_DIRS.some((d) => path.startsWith(d)) && MEDIA_EXT.includes(ext);
+        /* 拒绝路径穿越（../）与反斜杠变体，再叠加前缀/扩展名白名单 */
+        const okPath = !path.includes("..") && !path.includes("\\") && MEDIA_DIRS.some((d) => path.startsWith(d)) && MEDIA_EXT.includes(ext);
         if (!okPath) {
           res.status(400).json({ error: "不允许的文件路径或格式" });
           return;

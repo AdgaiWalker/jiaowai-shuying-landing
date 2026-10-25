@@ -566,15 +566,15 @@
           S.content.hero.heroSlides.splice(i, 1);
           markDirty(); renderGallery(); toast("已删除，点「保存并发布」后生效");
         } },
-      { sel: "#hero-add", fn: function(){ pickAndUpload("hero-new", function(path){ S.content.hero.heroSlides.push(path); }); } },
-      { sel: "[data-upload-work]", fn: function(el){ pickAndUpload("work", function(path, i){ S.content.gallery.works[i].src = path; }, Number(el.getAttribute("data-upload-work"))); } },
-      { sel: "[data-upload-season]", fn: function(el){ pickAndUpload("season", function(path, i){ S.content.gallery.seasons[i].photo.src = path; }, Number(el.getAttribute("data-upload-season"))); } },
-      { sel: "[data-upload-hero]", fn: function(el){ pickAndUpload("hero", function(path, i){ S.content.hero.heroSlides[i] = path; }, Number(el.getAttribute("data-upload-hero"))); } },
-      { sel: "[data-upload-endo]", fn: function(el){ pickAndUpload("endo", function(path, i){ S.content.endorsements.endorsements[i].src = path; }, Number(el.getAttribute("data-upload-endo"))); } },
-      { sel: "[data-upload-award]", fn: function(){ pickAndUpload("award", function(path){ S.content.endorsements.awardImage.src = path; }); } },
-      { sel: "[data-upload-about]", fn: function(){ pickAndUpload("about", function(path){ S.content.gallery.aboutImage.src = path; }); } },
-      { sel: "[data-upload-video]", fn: function(){ pickAndUpload("showreel", function(path){ S.content.gallery.featuredVideo.video = path; }, null, "public/videos/", ".mp4"); } },
-      { sel: "[data-upload-poster]", fn: function(){ pickAndUpload("showreel-poster", function(path){ S.content.gallery.featuredVideo.poster = path; }, null, "public/videos/"); } },
+      { sel: "#hero-add", fn: function(el){ pickAndUpload("hero-new", function(path){ S.content.hero.heroSlides.push(path); }, null, null, null, el); } },
+      { sel: "[data-upload-work]", fn: function(el){ pickAndUpload("work", function(path, i){ S.content.gallery.works[i].src = path; }, Number(el.getAttribute("data-upload-work")), null, null, el); } },
+      { sel: "[data-upload-season]", fn: function(el){ pickAndUpload("season", function(path, i){ S.content.gallery.seasons[i].photo.src = path; }, Number(el.getAttribute("data-upload-season")), null, null, el); } },
+      { sel: "[data-upload-hero]", fn: function(el){ pickAndUpload("hero", function(path, i){ S.content.hero.heroSlides[i] = path; }, Number(el.getAttribute("data-upload-hero")), null, null, el); } },
+      { sel: "[data-upload-endo]", fn: function(el){ pickAndUpload("endo", function(path, i){ S.content.endorsements.endorsements[i].src = path; }, Number(el.getAttribute("data-upload-endo")), null, null, el); } },
+      { sel: "[data-upload-award]", fn: function(el){ pickAndUpload("award", function(path){ S.content.endorsements.awardImage.src = path; }, null, null, null, el); } },
+      { sel: "[data-upload-about]", fn: function(el){ pickAndUpload("about", function(path){ S.content.gallery.aboutImage.src = path; }, null, null, null, el); } },
+      { sel: "[data-upload-video]", fn: function(el){ pickAndUpload("showreel", function(path){ S.content.gallery.featuredVideo.video = path; }, null, "public/videos/", ".mp4", el); } },
+      { sel: "[data-upload-poster]", fn: function(el){ pickAndUpload("showreel-poster", function(path){ S.content.gallery.featuredVideo.poster = path; }, null, "public/videos/", null, el); } },
     ];
     for (var k = 0; k < handlers.length; k++) {
       var el = t.closest(handlers[k].sel);
@@ -583,13 +583,13 @@
   });
 
   /* 统一上传流：选文件 → 按钮「提交中」→ upload API → 更新本地数据并重渲染
-   * 新路径上传（时间戳命名）改变了 JSON 中的 src，必须随后的「保存并发布」落库 → 标记 dirty */
-  function pickAndUpload(prefix, apply, index, dir, forceExt){
+   * 新路径上传（时间戳命名）改变了 JSON 中的 src，必须随后的「保存并发布」落库 → 标记 dirty
+   * btn 必须由点击处显式传入：文件对话框会夺走焦点，activeElement 不可靠 */
+  function pickAndUpload(prefix, apply, index, dir, forceExt, btn){
     pickFile(function(b64, name){
-      var btn = document.activeElement || null;
       var path = mediaPath(name, prefix, dir);
       if (forceExt) path = path.replace(/\.[a-z0-9]+$/i, forceExt);
-      withBusy(btn && btn.closest ? (btn.closest(".rowbtns") ? btn : null) : null, "提交中…", function(){
+      withBusy(btn, "提交中…", function(){
         return api("/api/content", { method: "POST", body: JSON.stringify({ action: "upload", path: path, content: b64 }) })
           .then(function(){
             apply(path, index);
@@ -618,7 +618,7 @@
         else if (path.length === 2) { C.brand[path[0]][path[1]] = inp.value; }
         else { C.brand[path[0]] = inp.value; }
       });
-      return Promise.all([saveFile("gallery"), saveFile("hero"), saveFile("brand"), saveFile("endorsements")]);
+      return saveFiles(["gallery", "hero", "brand", "endorsements"]);
     });
   });
 
@@ -646,33 +646,43 @@
     });
   });
 
-  /* ── 保存 + 发布自动确认（T6.3：约 3 分钟构建完成后主动提示「已上线」） ── */
+  /* ── 保存 + 发布自动确认（T6.3：约 3 分钟构建完成后主动提示「已上线」） ──
+   * publishTimer 全局单例：批量保存/连续保存只保留一个轮询器，避免重复提示 */
+  var publishTimer = null;
   function watchPublish(baselineDate){
+    if (publishTimer) clearInterval(publishTimer);
     var n = 0;
-    var timer = setInterval(function(){
+    publishTimer = setInterval(function(){
       n += 1;
       api("/api/content?what=history").then(function(d){
         var newest = (d.history || [])[0];
         if (newest && newest.message.indexOf("后台:") === 0 && (!baselineDate || newest.date > baselineDate)) {
-          clearInterval(timer);
+          clearInterval(publishTimer); publishTimer = null;
           S.history = d.history;
           renderHistory(); renderRecent();
           toast("已上线 · 全网生效");
         }
       }).catch(function(){});
-      if (n >= 9) clearInterval(timer); /* 20s × 9 ≈ 3 分钟 */
+      if (n >= 9) { clearInterval(publishTimer); publishTimer = null; } /* 20s × 9 ≈ 3 分钟 */
     }, 20000);
   }
-  function saveFile(key){
+  /* 批量保存：并行提交多个文件，统一一条提示与一个发布轮询器 */
+  function saveFiles(keys, btn){
+    if (btn) btn.disabled = true;
     var baseline = (S.history || [])[0] ? S.history[0].date : null;
-    return api("/api/content", { method: "POST", body: JSON.stringify({ action: "save", file: key, content: JSON.stringify(S.content[key]) }) })
+    return Promise.all(keys.map(function(key){
+      return api("/api/content", { method: "POST", body: JSON.stringify({ action: "save", file: key, content: JSON.stringify(S.content[key]) }) });
+    }))
       .then(function(){
         clearDirty();
         toast("已提交发布 · 约 3 分钟后上线");
         return api("/api/content?what=history").then(function(d){ S.history = d.history || []; renderHistory(); renderRecent(); }).catch(function(){});
       })
+      .catch(function(e){ toast(e.message, true); })
+      .finally(function(){ if (btn) btn.disabled = false; })
       .then(function(){ watchPublish(baseline); });
   }
+  function saveFile(key, btn){ return saveFiles([key], btn); }
 
   /* ── 文件选择 ── */
   function pickFile(cb){
