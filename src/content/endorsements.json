@@ -1,0 +1,55 @@
+{
+  "endorsements": [
+    {
+      "id": "provincial-league",
+      "level": "省里推荐",
+      "badge": "团省委转发",
+      "title": "共青团黑龙江省委官方视频号转发",
+      "source": "共青团黑龙江省委官方视频号",
+      "desc": "社团多部视频创作获团省委官方平台选用展播并全省推介",
+      "type": "video",
+      "src": "/videos/provincial-league.mp4",
+      "poster": "/videos/provincial-league-poster.jpg"
+    },
+    {
+      "id": "provincial-gqt",
+      "level": "省里推荐",
+      "badge": "黑龙江省共青团",
+      "title": "黑龙江省共青团官方新媒体转发",
+      "source": "黑龙江省共青团官方新媒体矩阵",
+      "desc": "作品多次被黑龙江省共青团官方账号作为青年优秀创作转发",
+      "type": "video",
+      "src": "/videos/provincial-gqt.mp4",
+      "poster": "/videos/provincial-gqt-poster.jpg"
+    },
+    {
+      "id": "school-award",
+      "level": "校级表彰",
+      "badge": "党委统战部",
+      "title": "两届盛会宣传工作「先进集体」荣誉证书",
+      "source": "黑河学院党委宣传统战部（2026.6 颁发）",
+      "desc": "中俄大学生交流大会 / 中俄远东高校田径运动大会宣传先进集体原件",
+      "type": "photo",
+      "src": "/photos/award.jpg",
+      "ratio": "16/9"
+    },
+    {
+      "id": "city-media",
+      "level": "市级党媒",
+      "badge": "黑河日报",
+      "title": "《黑河日报》专版采访与署名供稿",
+      "source": "中共黑河市委机关报 · 《黑河日报》",
+      "desc": "社团骨干与摄影纪实成果登上党媒专题版面，获个人署名供稿",
+      "type": "photo",
+      "src": "/photos/media-interview.jpg",
+      "ratio": "3/4"
+    }
+  ],
+  "awardImage": {
+    "src": "/photos/award.jpg",
+    "title": "获奖证书",
+    "hint": "两届中俄交流活动宣传工作「先进集体」荣誉证书",
+    "spec": "",
+    "ratio": "16/9"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "heroSlides": [
+    "/photos/hero-1.jpg",
+    "/photos/hero-2.jpg",
+    "/photos/hero-3.jpg",
+    "/photos/hero-4.jpg"
+  ],
+  "heroMusic": "/audio/snowfall.m4a"
+}
