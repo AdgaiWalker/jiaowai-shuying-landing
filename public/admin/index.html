@@ -67,6 +67,21 @@
   .stat span{ font-size:11px; color:var(--dim); display:block; }
   .stat b{ font-size:16px; font-weight:600; display:block; margin-top:4px; }
   .stat .chip{ display:inline-block; }
+
+  /* 微信群码倒计时（7 天周期） */
+  .cd{ display:flex; align-items:baseline; gap:6px; margin-top:4px; }
+  .cd b{ font-size:26px; font-weight:600; letter-spacing:.5px; line-height:1; }
+  .cd span{ font-size:11px; color:var(--dim); }
+  .cd.warn b{ color:#f0c184; }
+  .cd.danger b{ color:#ff8b8e; }
+  .cd-bar{ height:4px; border-radius:99px; background:rgba(255,255,255,.09); overflow:hidden; margin-top:8px; }
+  .cd-bar i{ display:block; height:100%; border-radius:99px; background:var(--green); transition:width .4s var(--ease); }
+  .cd-bar.warn i{ background:var(--amber); }
+  .cd-bar.danger i{ background:var(--red); }
+  .wx-count{ display:flex; align-items:baseline; gap:6px; font-size:12px; color:var(--dim); }
+  .wx-count b{ font-size:22px; font-weight:600; color:var(--text); line-height:1; }
+  .wx-count.warn b{ color:#f0c184; }
+  .wx-count.danger b{ color:#ff8b8e; }
   .feedrow{ display:flex; align-items:center; gap:10px; padding:12px 14px; border-bottom:1px solid var(--line); font-size:13px; flex-wrap:wrap; }
   .feedrow:last-child{ border-bottom:none; }
   .feedrow em{ font-style:normal; color:var(--dim); }
@@ -326,23 +341,49 @@
   }
 
   /* ── 概览 ── */
-  /* 群码过期状态（T1.6）：依据 qrs.wxExpires 计算倒计时 */
+  /* 群码过期倒计时（T1.6 + v2）：依据 qrs.wxExpires 计算，7 天周期渲染
+   * 返回 { days, level, text }：level = ok(>4) | warn(2~4) | danger(≤1/已过期) | unknown(未填) */
   function wxState(){
     var exp = S.content && S.content.qrs ? S.content.qrs.wxExpires : null;
-    if (!exp || !/^\d{4}-\d{2}-\d{2}$/.test(exp)) return { cls: "amber", text: "每周更新 · 建议填过期日" };
-    var days = Math.ceil((new Date(exp + "T23:59:59") - Date.now()) / 86400e3);
-    if (isNaN(days) || days > 30) return { cls: "amber", text: "剩 " + (isNaN(days) ? "?" : days) + " 天" };
-    if (days < 0) return { cls: "red", text: "已过期 " + -days + " 天" };
-    if (days <= 2) return { cls: "red", text: days === 0 ? "今天过期" : "剩 " + days + " 天" };
-    return { cls: "amber", text: "剩 " + days + " 天" };
+    if (!exp || !/^\d{4}-\d{2}-\d{2}$/.test(exp)) return { days: null, level: "unknown", cls: "amber", text: "未填过期日" };
+    /* 日历日差（与 qr-expiry-watch Action 保持一致，避免时分秒取整造成两端差一天） */
+    var days = Math.round((new Date(exp) - new Date(new Date().toDateString())) / 86400e3);
+    if (isNaN(days)) return { days: null, level: "unknown", cls: "amber", text: "未填过期日" };
+    if (days < 0) return { days: days, level: "danger", cls: "red", text: "已过期 " + -days + " 天", exp: exp };
+    if (days === 0) return { days: 0, level: "danger", cls: "red", text: "今天过期", exp: exp };
+    if (days <= 1) return { days: days, level: "danger", cls: "red", text: "明天过期", exp: exp };
+    if (days <= 4) return { days: days, level: "warn", cls: "amber", text: "剩 " + days + " 天", exp: exp };
+    return { days: days, level: "ok", cls: "green", text: "剩 " + days + " 天", exp: exp };
   }
   function channelState(qr){
     if (qr.key === "wx") return wxState();
     return qr.src ? { cls: "green", text: "正常" } : { cls: "red", text: "待上传" };
   }
   function renderOverview(){
-    $("#ov-alert").innerHTML = '<div class="alert"><span class="head"><i data-lucide="alarm-clock"></i>微信群二维码需要每周更换</span><span>过期前在微信「群二维码 → 重新生成」拿新图，到「二维码」页上传即可。</span><button type="button" class="btn primary sm" data-goto="qr" style="align-self:flex-start"><i data-lucide="upload"></i>去换码</button></div>';
+    /* 预警条分级：>4 天彻底安静（不制造噪音），2~4 天黄色预警，≤1 天/过期红色强提醒 */
+    var wx = wxState();
+    var alertHtml = "";
+    if (wx.level === "danger") {
+      alertHtml = '<div class="alert"><span class="head"><i data-lucide="siren"></i>' + (wx.days < 0 ? "微信群二维码已过期 " + -wx.days + " 天" : wx.days === 0 ? "微信群二维码今天过期" : "微信群二维码明天过期") + '</span><span>新生扫码会失败，请立即更换：微信「群二维码 → 重新生成」→ 上传新码 → 更新过期日。</span><button type="button" class="btn primary sm" data-goto="qr" style="align-self:flex-start"><i data-lucide="upload"></i>立即换码</button></div>';
+    } else if (wx.level === "warn") {
+      alertHtml = '<div class="alert" style="background:linear-gradient(120deg,rgba(230,162,60,.16),rgba(230,162,60,.05));border-color:rgba(230,162,60,.4)"><span class="head"><i data-lucide="alarm-clock" style="color:var(--amber)"></i>微信群二维码还有 ' + wx.days + ' 天过期</span><span>建议这两天完成更换：微信「群二维码 → 重新生成」→ 上传新码 → 更新过期日。</span><button type="button" class="btn sm" data-goto="qr" style="align-self:flex-start"><i data-lucide="upload"></i>提前换码</button></div>';
+    } else if (wx.level === "unknown") {
+      alertHtml = '<div class="alert" style="background:var(--panel2);border-color:var(--line)"><span class="head"><i data-lucide="calendar-clock" style="color:var(--dim)"></i>微信群二维码未设置过期日</span><span>到「二维码」页填写过期日后，这里会显示倒计时提醒。</span><button type="button" class="btn sm" data-goto="qr" style="align-self:flex-start"><i data-lucide="calendar"></i>去设置</button></div>';
+    }
+    $("#ov-alert").innerHTML = alertHtml;
+
     $("#ov-channels").innerHTML = (S.content.qrs.qrs || []).map(function(q){
+      if (q.key === "wx") {
+        var pct = wx.days === null ? 0 : Math.max(0, Math.min(100, Math.round((wx.days / 7) * 100)));
+        return '<div class="panel stat"><span>' + esc(q.label) + '</span>' +
+          (wx.days === null
+            ? '<b class="chip amber" style="margin-top:6px">未填过期日</b>'
+            : (wx.days < 0
+                ? '<div class="cd danger"><b>已过期</b><span>' + (-wx.days) + ' 天</span></div>'
+                : '<div class="cd ' + (wx.level === "danger" ? "danger" : wx.level === "warn" ? "warn" : "") + '"><b>' + wx.days + '</b><span>天后过期</span></div>') +
+              '<div class="cd-bar ' + (wx.level === "danger" ? "danger" : wx.level === "warn" ? "warn" : "") + '"><i style="width:' + pct + '%"></i></div>' +
+              '<span class="hint">' + esc(wx.exp) + ' 到期</span>');
+        }
       var st = channelState(q);
       return '<div class="panel stat"><span>' + esc(q.label) + '</span><b class="chip ' + st.cls + '" style="margin-top:6px">' + st.text + '</b></div>';
     }).join("");
@@ -363,9 +404,17 @@
       var preview = q.src
         ? '<img class="thumb" src="' + esc(url(q.src)) + '" alt="' + esc(q.label) + '">'
         : '<div class="thumb hollow"><i data-lucide="image-plus"></i></div>';
+      var wxLine = "";
+      if (q.key === "wx") {
+        var w = wxState();
+        wxLine = w.days === null
+          ? '<span class="hint">未设置过期日，填下方日期后显示倒计时</span>'
+          : '<div class="wx-count ' + (w.level === "danger" ? "danger" : w.level === "warn" ? "warn" : "") + '"><b>' + (w.days < 0 ? "已过期" : w.days) + '</b><span>' + (w.days < 0 ? -w.days + " 天 · " : " 天后过期 · ") + esc(w.exp) + '</span></div>';
+      }
       return '<div class="panel cardrow">' + preview +
         '<div class="cardinfo">' +
           '<div class="top"><b>' + esc(q.label) + '</b><span class="chip ' + st.cls + '">' + st.text + '</span></div>' +
+          wxLine +
           '<span class="hint">' + esc(q.note) + '</span>' +
           '<div class="rowbtns">' +
             '<button type="button" class="btn sm' + (q.key === "wx" ? " primary" : "") + '" data-upload-qr="' + i + '"><i data-lucide="upload"></i>上传新码</button>' +

@@ -1,0 +1,53 @@
+# 微信群二维码过期巡检（to-do T6.6）
+# 逻辑：每天上午 10 点（北京时间）读取 src/content/qrs.json 的 wxExpires：
+#   - 距过期 ≤3 天（或已过期）→ 确保存在提醒 Issue（已开则每日跟评倒计时）
+#   - 换码后（wxExpires 更新为 >3 天）→ 自动关闭提醒 Issue
+# 提醒方式：GitHub 会向 Watch 了本仓库的成员发送邮件通知（管理员订阅一次即可）
+name: qr-expiry-watch
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # UTC 02:00 = 北京时间 10:00
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 巡检过期日并维护提醒 Issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: "【每周提醒】微信群二维码即将过期"
+        run: |
+          set -euo pipefail
+          exp=$(python3 -c "import json;print(json.load(open('src/content/qrs.json')).get('wxExpires') or '')")
+          if [ -z "$exp" ]; then
+            echo "未设置 wxExpires，跳过（请在后台「二维码」页填写过期日）"
+            exit 0
+          fi
+          days=$(python3 -c "import sys,datetime; print((datetime.date.fromisoformat(sys.argv[1]) - datetime.date.today()).days)" "$exp")
+          echo "过期日 $exp，剩余 $days 天"
+          open_issue=$(gh issue list --state open --search "in:title $TITLE" --json number --jq '.[0].number // empty')
+          if [ "$days" -le 3 ]; then
+            if [ -n "$open_issue" ]; then
+              gh issue comment "$open_issue" --body "倒计时更新：剩 **$days** 天（$exp 过期）。换码后本提醒自动关闭。"
+            else
+              body="微信群二维码 **$exp** 过期，剩 **$days** 天。
+          换码三步：
+          1. 微信群 → 「…」→ 群二维码 → 截图（方形码体）
+          2. 打开管理后台 /admin → 二维码 → 上传新码
+          3. 同页更新「群码过期日」→ 保存（本提醒 Issue 自动关闭）
+          > 本 Issue 由每日巡检自动维护，换码后自动关闭。"
+              gh issue create --title "$TITLE" --body "$body" --label "qr-watch"
+            fi
+          else
+            if [ -n "$open_issue" ]; then
+              gh issue close "$open_issue" --comment "检测到新过期日（$exp，剩 $days 天），群码已更新，提醒关闭。"
+            fi
+            echo "状态健康（剩 $days 天），无需提醒"
+          fi
