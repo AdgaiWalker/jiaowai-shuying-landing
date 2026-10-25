@@ -34,6 +34,8 @@ jobs:
           echo "过期日 $exp，剩余 $days 天"
           open_issue=$(gh issue list --state open --search "in:title $TITLE" --json number --jq '.[0].number // empty')
           if [ "$days" -le 3 ]; then
+            # label 不存在时 gh issue create 会失败，先幂等创建（已存在则忽略）
+            gh label create qr-watch --description "群码过期巡检自动提醒" --color D73A4A 2>/dev/null || true
             if [ -n "$open_issue" ]; then
               gh issue comment "$open_issue" --body "倒计时更新：剩 **$days** 天（$exp 过期）。换码后本提醒自动关闭。"
             else

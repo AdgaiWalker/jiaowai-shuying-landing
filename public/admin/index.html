@@ -647,33 +647,45 @@
     });
   });
 
-  /* ── 保存 + 发布自动确认（T6.3：约 3 分钟构建完成后主动提示「已上线」） ──
-   * publishTimer 全局单例：批量保存/连续保存只保留一个轮询器，避免重复提示 */
+  /* ── 保存 + 发布自动确认（T6.3 修订：探测"部署完成"而非"提交出现"） ──
+   * 原理：内容 JSON 打包进带哈希的 JS 产物，任何内容变更 → 首页引用的
+   * /assets/index-*.js 哈希变化 = 新构建已上线。比"提交出现在历史里"准确
+   * （提交后 Vercel 仍需 2~3 分钟构建）。本地/演示环境首页无该资源，静默跳过。 */
   var publishTimer = null;
-  function watchPublish(baselineDate){
+  function currentAssetUrl(html){
+    var m = String(html).match(/(?:src|href)="(\/assets\/index-[^"]+\.js)"/);
+    return m ? m[1] : null;
+  }
+  function fetchAsset(){
+    return fetch("/", { cache: "no-store" }).then(function(r){ return r.text(); }).then(currentAssetUrl).catch(function(){ return null; });
+  }
+  function watchDeploy(baselineAsset){
+    if (!baselineAsset) return; /* 拿不到基线（非生产形态）则不做假确认 */
     if (publishTimer) clearInterval(publishTimer);
     var n = 0;
     publishTimer = setInterval(function(){
       n += 1;
-      api("/api/content?what=history").then(function(d){
-        var newest = (d.history || [])[0];
-        if (newest && newest.message.indexOf("后台:") === 0 && (!baselineDate || newest.date > baselineDate)) {
+      fetchAsset().then(function(a){
+        if (a && a !== baselineAsset) {
           clearInterval(publishTimer); publishTimer = null;
-          S.history = d.history;
-          renderHistory(); renderRecent();
           toast("已上线 · 全网生效");
+          api("/api/content?what=history").then(function(d){ S.history = d.history || []; renderHistory(); renderRecent(); }).catch(function(){});
         }
-      }).catch(function(){});
-      if (n >= 9) { clearInterval(publishTimer); publishTimer = null; } /* 20s × 9 ≈ 3 分钟 */
+      });
+      if (n >= 12) { clearInterval(publishTimer); publishTimer = null; } /* 20s × 12 = 4 分钟 */
     }, 20000);
   }
-  /* 批量保存：并行提交多个文件，统一一条提示与一个发布轮询器 */
+  /* 批量保存：并行提交多个文件，统一一条提示与一个部署探测 */
   function saveFiles(keys, btn){
     if (btn) btn.disabled = true;
-    var baseline = (S.history || [])[0] ? S.history[0].date : null;
-    return Promise.all(keys.map(function(key){
-      return api("/api/content", { method: "POST", body: JSON.stringify({ action: "save", file: key, content: JSON.stringify(S.content[key]) }) });
-    }))
+    var baselineAsset = null;
+    return fetchAsset()
+      .then(function(a){ baselineAsset = a; })
+      .then(function(){
+        return Promise.all(keys.map(function(key){
+          return api("/api/content", { method: "POST", body: JSON.stringify({ action: "save", file: key, content: JSON.stringify(S.content[key]) }) });
+        }));
+      })
       .then(function(){
         clearDirty();
         toast("已提交发布 · 约 3 分钟后上线");
@@ -681,7 +693,7 @@
       })
       .catch(function(e){ toast(e.message, true); })
       .finally(function(){ if (btn) btn.disabled = false; })
-      .then(function(){ watchPublish(baseline); });
+      .then(function(){ watchDeploy(baselineAsset); });
   }
   function saveFile(key, btn){ return saveFiles([key], btn); }
 
