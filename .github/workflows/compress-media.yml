@@ -1,0 +1,56 @@
+# 图片自动压缩：PR 中 public/ 下的图片超规格（>2MB 或长边 >2000px）时自动压缩并回推
+# 目的：把媒体约束从"口头约定"变成"机制"（PRD R-4 / to-do T6.1）
+name: compress-media
+
+on:
+  pull_request:
+    paths:
+      - "public/photos/**"
+      - "public/qr/**"
+      - "public/videos/**"
+      - "public/audio/**"
+
+permissions:
+  contents: write
+
+jobs:
+  compress:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: 压缩超规格图片
+        run: |
+          set -euo pipefail
+          MAX_BYTES=$((2 * 1024 * 1024))
+          MAX_EDGE=2000
+          changed=0
+          # 遍历 PR 中改动的图片（对 main 的 diff）
+          for f in $(git diff --name-only origin/main...HEAD -- 'public/photos/*.jpg' 'public/photos/*.jpeg' 'public/photos/*.png' 'public/photos/*.webp' 'public/qr/*.jpg' 'public/qr/*.png'); do
+            [ -f "$f" ] || continue
+            size=$(stat -c%s "$f")
+            edge=$(identify -format "%[fx:max(w,h)]" "$f" 2>/dev/null | cut -d. -f1)
+            edge=${edge:-0}
+            if [ "$size" -gt "$MAX_BYTES" ] || [ "$edge" -gt "$MAX_EDGE" ]; then
+              echo "压缩 $f（${size}B / 长边${edge}px）"
+              # 先按长边 2000 缩放，再逐步降质直到 ≤2MB
+              convert "$f" -resize "${MAX_EDGE}x${MAX_EDGE}>" -quality 85 "$f"
+              for q in 80 75 70 60; do
+                [ "$(stat -c%s "$f")" -le "$MAX_BYTES" ] && break
+                convert "$f" -quality "$q" "$f"
+              done
+              changed=1
+            fi
+          done
+          if [ "$changed" -eq 1 ]; then
+            git config user.name "jwsy-media-bot"
+            git config user.email "bot@hhxyjwsyst.online"
+            git add public/
+            git commit -m "chore(media): 自动压缩超规格图片（长边≤2000px / ≤2MB）" || true
+            git push
+          else
+            echo "全部图片符合规格，无需处理"
+          fi
