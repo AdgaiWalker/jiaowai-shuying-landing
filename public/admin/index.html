@@ -382,7 +382,8 @@
                 ? '<div class="cd danger"><b>已过期</b><span>' + (-wx.days) + ' 天</span></div>'
                 : '<div class="cd ' + (wx.level === "danger" ? "danger" : wx.level === "warn" ? "warn" : "") + '"><b>' + wx.days + '</b><span>天后过期</span></div>') +
               '<div class="cd-bar ' + (wx.level === "danger" ? "danger" : wx.level === "warn" ? "warn" : "") + '"><i style="width:' + pct + '%"></i></div>' +
-              '<span class="hint">' + esc(wx.exp) + ' 到期</span>');
+              '<span class="hint">' + esc(wx.exp) + ' 到期</span>') +
+          '</div>';
         }
       var st = channelState(q);
       return '<div class="panel stat"><span>' + esc(q.label) + '</span><b class="chip ' + st.cls + '" style="margin-top:6px">' + st.text + '</b></div>';
