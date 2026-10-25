@@ -16,9 +16,12 @@ pnpm preview      # 预览构建产物
 - `@/` → `src/`（由 `vite.config.ts` / `tsconfig.json` 统一配置）。
 - `src/lib/`、`src/hooks/` **不存在**；`components.json` 里的 `@/lib/utils`、`@/components/ui` 等是遗留 shadcn 配置，**不要按这些路径新增代码**。
 - 页面区块放 `src/sections/`，通用组件放 `src/components/`，纯物理组件放 `src/components/xpbd/`。
+- 内容数据放 `src/content/*.json`（管理后台写入目标；字段即三方契约，改动需同步后台表单与读取层）。
+- 管理后台页面在 `public/admin/index.html`（零构建单文件原生 JS，图标用 Lucide CDN，不用 Emoji）；服务端函数在 `api/`（零 npm 依赖，`api/_lib.js` 定义 StorageAdapter 接口，业务只依赖接口）。
 
 ## 内容与素材边界
-- 文案、图片、视频、二维码路径统一在 `src/config/site.ts`；修改素材**不要直接改组件**。
+- 文案、图片、视频、二维码路径统一在 `src/content/*.json`；`src/config/site.ts` 是读取层（校验 + 逐字段兜底），**不要在 site.ts 里直接写死内容常量**；修改素材**不要直接改组件**。
+- 日常内容变更走 `/admin` 后台（GitHub Contents API 提交 → 自动部署），不要手工提交内容 JSON，除非走 EB-4 兜底。
 - 静态资源放 `public/`：`photos/`、`videos/`、`audio/`、`qr/`。
 - 微信群二维码有有效期，过期后替换 `public/qr/wechat-group.jpg` 即可。
 - SEO / 分享卡在 `index.html` 维护，`site.ts` 中的 `siteUrl` 用于相关引用。
