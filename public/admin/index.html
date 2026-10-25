@@ -94,6 +94,12 @@
   .savebar .dirty{ font-size:12px; color:var(--amber); display:inline-flex; align-items:center; gap:5px; }
   .savebar .dirty svg.lucide{ width:13px; height:13px; }
 
+  /* 加载态 */
+  .loadbar{ display:flex; align-items:center; justify-content:center; gap:8px; padding:48px 0; color:var(--dim); font-size:13px; }
+  .loadbar svg.lucide{ animation:spin 1s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .loadbar svg.lucide{ animation:none; } }
+
   .toast{ position:fixed; left:50%; bottom:24px; transform:translate(-50%,14px); display:flex; align-items:center; gap:8px; background:rgba(38,38,43,.94); border:1px solid var(--line); padding:11px 16px; border-radius:12px; font-size:13px; opacity:0; pointer-events:none; transition:opacity .25s var(--ease), transform .25s var(--ease); z-index:99; white-space:nowrap; max-width:92vw; }
   .toast.show{ opacity:1; transform:translate(-50%,0); }
   .toast .dot{ width:8px; height:8px; border-radius:50%; background:var(--green); flex:none; }
@@ -135,6 +141,7 @@
   </nav>
 
   <main>
+    <div class="loadbar hidden" id="loadbar"><i data-lucide="loader-circle"></i>正在从仓库加载内容…</div>
     <!-- 概览 -->
     <section class="screen" id="scr-overview">
       <div id="ov-alert"></div>
@@ -277,19 +284,28 @@
   $("#lg-pass").addEventListener("keydown", function(e){ if (e.key === "Enter") doLogin(); });
   $("#btn-logout").addEventListener("click", function(){
     document.cookie = "jwsy_admin=; Max-Age=0; Path=/";
+    /* 清残留：登出后清空数据与已渲染视图，避免下一位登录者看到旧内容闪烁 */
+    S.content = null; S.history = [];
+    clearDirty();
+    $("#ov-channels").innerHTML = ""; $("#ov-recent").innerHTML = ""; $("#his-list").innerHTML = "";
+    $("#qr-cards").innerHTML = ""; $("#gl-body").innerHTML = "";
     showLogin();
   });
 
-  /* ── 数据加载 ── */
+  /* ── 数据加载：内容与历史并行拉取，加载态可视 ── */
+  function setLoading(on){ $("#loadbar").classList.toggle("hidden", !on); }
   function loadContent(){
-    api("/api/content?what=content").then(function(d){
-      S.content = d.content;
+    setLoading(true);
+    Promise.all([
+      api("/api/content?what=content"),
+      api("/api/content?what=history").catch(function(){ return { history: [] }; }),
+    ]).then(function(r){
+      S.content = r[0].content;
       renderAll();
-      return api("/api/content?what=history");
-    }).then(function(d){
-      S.history = d.history || [];
+      S.history = r[1].history || [];
       renderRecent(); renderHistory();
-    }).catch(function(e){ if (S.content) toast(e.message, true); });
+    }).catch(function(e){ toast(e.message, true); })
+      .finally(function(){ setLoading(false); });
   }
   function renderAll(){
     if (!S.content) return;
@@ -621,16 +637,18 @@
     inp.click();
   }
 
-  /* ── 启动：探测会话（已登录直接进后台） ── */
-  api("/api/content?what=content").then(function(d){
-    S.content = d.content;
-    showApp(d.user || "已登录");
+  /* ── 启动：探测会话（已登录直接进后台，内容与历史并行） ── */
+  Promise.all([
+    api("/api/content?what=content").catch(function(){ return null; }),
+    api("/api/content?what=history").catch(function(){ return null; }),
+  ]).then(function(r){
+    if (!r[0]) return; /* 未登录，停在登录页 */
+    S.content = r[0].content;
+    showApp(r[0].user || "已登录");
     renderAll();
-    return api("/api/content?what=history");
-  }).then(function(d){
-    S.history = d.history || [];
+    S.history = (r[1] && r[1].history) || [];
     renderRecent(); renderHistory();
-  }).catch(function(){ /* 未登录，停在登录页 */ });
+  });
 })();
 </script>
 </body>

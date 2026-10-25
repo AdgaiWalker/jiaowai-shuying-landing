@@ -41,25 +41,24 @@ export default async function handler(req, res) {
       const what = new URL(req.url, "http://localhost").searchParams.get("what");
 
       if (what === "content") {
-        const content = {};
-        for (const key of Object.keys(CONTENT_FILES)) {
-          content[key] = (await storage.readJsonFile(CONTENT_FILES[key])) || {};
-        }
+        /* 五文件并行读取：串行在跨境网络下要 5×RTT，并行压到 1×RTT */
+        const entries = await Promise.all(
+          Object.keys(CONTENT_FILES).map(async (key) => [key, (await storage.readJsonFile(CONTENT_FILES[key])) || {}])
+        );
+        const content = Object.fromEntries(entries);
         res.status(200).json({ ok: true, user, content });
         return;
       }
 
       if (what === "history") {
         const merged = new Map();
-        for (const key of Object.keys(CONTENT_FILES)) {
-          // 降级：单个文件历史拉取失败时跳过该文件，不影响整体返回
-          let commits = [];
-          try {
-            commits = await storage.listCommits(CONTENT_FILES[key]);
-          } catch {
-            continue;
-          }
-          for (const c of commits) {
+        /* 并行 + 逐文件降级：任一文件历史拉取失败时跳过，不影响整体返回 */
+        const results = await Promise.allSettled(
+          Object.keys(CONTENT_FILES).map((key) => storage.listCommits(CONTENT_FILES[key]))
+        );
+        for (const r of results) {
+          if (r.status !== "fulfilled") continue;
+          for (const c of r.value) {
             if (!merged.has(c.sha)) merged.set(c.sha, { ...c, sha: c.sha.slice(0, 8) });
           }
         }
