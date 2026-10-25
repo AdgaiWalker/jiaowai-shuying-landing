@@ -1,0 +1,49 @@
+{
+  "aboutImage": {
+    "src": "/photos/about-autumn-path.jpg",
+    "title": "关于我们配图",
+    "hint": "秋日小路上同行的人",
+    "spec": "",
+    "ratio": "3/2"
+  },
+  "seasons": [
+    {
+      "name": "春 · 樱与新生",
+      "desc": "你在四月的拐角，记录新生的神情与樱花初绽。",
+      "photo": { "src": "/photos/season-spring.jpg", "title": "春", "hint": "校园樱花", "spec": "", "ratio": "4/3" }
+    },
+    {
+      "name": "夏 · 江畔长昼",
+      "desc": "你在黑龙江边的漫长白昼里，拍下绿荫与奔流的江水。",
+      "photo": { "src": "/photos/season-summer.jpg", "title": "夏", "hint": "绿荫小路", "spec": "", "ratio": "4/3" }
+    },
+    {
+      "name": "秋 · 一城黄叶",
+      "desc": "你在落叶铺满的十月街头，学会捕捉秋日的光斑。",
+      "photo": { "src": "/photos/season-autumn.jpg", "title": "秋", "hint": "红叶蓝天", "spec": "", "ratio": "4/3" }
+    },
+    {
+      "name": "冬 · 雪夜暖光",
+      "desc": "你在零下三十度的寒冬夜晚，用镜头拥抱街灯的温度。",
+      "photo": { "src": "/photos/season-winter.jpg", "title": "冬", "hint": "雪夜街灯", "spec": "", "ratio": "4/3" }
+    }
+  ],
+  "activityTypes": ["主题外拍", "校园活动跟拍", "技能课堂", "校园影展", "短片创作"],
+  "works": [
+    { "src": "/photos/work-autumn-bokeh.jpg", "title": "作品位", "hint": "秋叶成诗", "spec": "", "ratio": "3/2", "caption": "秋叶成诗" },
+    { "src": "/photos/work-startrails.jpg", "title": "作品位", "hint": "星轨", "spec": "", "ratio": "2/3", "caption": "星轨" },
+    { "src": "/photos/work-goat.jpg", "title": "作品位", "hint": "山间白山羊", "spec": "", "ratio": "3/2", "caption": "牧" },
+    { "src": "/photos/work-lightpainting.jpg", "title": "作品位", "hint": "光绘", "spec": "", "ratio": "3/2", "caption": "光绘" },
+    { "src": "/photos/work-temple.jpg", "title": "作品位", "hint": "天坛", "spec": "", "ratio": "9/16", "caption": "天坛" },
+    { "src": "/photos/work-night-fisher.jpg", "title": "作品位", "hint": "江畔夜钓", "spec": "", "ratio": "3/2", "caption": "江畔夜钓" },
+    { "src": "/photos/work-flag-lights.jpg", "title": "作品位", "hint": "旗与灯", "spec": "", "ratio": "3/2", "caption": "旗与灯" },
+    { "src": "/photos/work-city-panorama.jpg", "title": "作品位", "hint": "黑河城全景", "spec": "", "ratio": "16/9", "caption": "黑河全景" },
+    { "src": "/photos/work-golden-bokeh.jpg", "title": "作品位", "hint": "一街光斑", "spec": "", "ratio": "3/2", "caption": "一街光斑" }
+  ],
+  "featuredVideo": {
+    "video": "/videos/showreel.mp4",
+    "poster": "/videos/showreel-poster.jpg",
+    "hint": "社团成就混剪：团省委三次转发、学校采纳证明、历届活动年表",
+    "spec": "960×540 · H.264 · 1.9MB · 静音循环"
+  }
+}

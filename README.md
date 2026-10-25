@@ -61,10 +61,15 @@
 ## 📂 项目结构
 
 ```text
+├── api/                        # 管理后台 Serverless 函数（Vercel）
+│   ├── _lib.js                 # 会话/限速 + 存储适配器（StorageAdapter 接口与实现）
+│   ├── login.js                # POST /api/login 账号密码登录
+│   └── content.js              # GET/POST /api/content 内容读写/上传/回滚
 ├── public/                     # 静态媒体与素材中心
+│   ├── admin/index.html        # 管理后台单页（/admin，管理组手机使用）
 │   ├── audio/                  # 免版权背景音乐（包含完整版与 75s Web 精剪切片）
 │   ├── photos/                 # 轮播图、四季摄影展、作品大图、证书实拍
-│   ├── qr/                     # 微信群码、公众号码、官方抖音码
+│   ├── qr/                     # 微信群码、QQ群码、公众号码、官方抖音码
 │   ├── videos/                 # 影视组精选混剪短片 (showreel.mp4)
 │   └── audio-preview.html      # BGM 专属在线试听室
 ├── src/
@@ -80,7 +85,8 @@
 │   │   ├── MobileCtaBar.tsx    # 移动端吸底转化栏
 │   │   └── SpotlightCard.tsx   # 光影探照灯质感卡片
 │   ├── config/
-│   │   └── site.ts             # ⚙️ 全站配置中心（文案、素材路径、BGM 开关）
+│   │   └── site.ts             # ⚙️ 内容读取层（校验+兜底，数据在 content/*.json）
+│   ├── content/                # 📝 全站可编辑内容（后台写入目标，schema 契约）
 │   ├── sections/               # 落地页业务分块
 │   │   ├── Hero.tsx            # S1 首屏（大片视觉 + 品牌 Slogan + 音乐）
 │   │   ├── StatsStrip.tsx      # S2 事实数据带
@@ -146,17 +152,12 @@ pnpm build
 
 ## ⚙️ 素材与文案替换指南
 
-所有文案与素材路径均收拢在 [`src/config/site.ts`](src/config/site.ts) 中，日常维护与更换素材**无需修改任何组件代码**：
+**管理组日常维护请直接使用在线后台**：`https://hhxyjwsyst.online/admin`（账号密码见《[管理组使用说明](docs/管理组使用说明.md)》），换群码、换作品、改文案均无需修改代码，保存后约 3 分钟全网生效，且可随时在「发布历史」中回滚。
 
-### 1. 更换照片与视频
-- 将新照片放入 `public/photos/`，并在 `src/config/site.ts` 中更新对应文件名；
-- 将影视短片放入 `public/videos/showreel.mp4`，封面放入 `showreel-poster.jpg`。
+后台的写入目标是 `src/content/*.json`（内容与素材路径的结构化数据源，`src/config/site.ts` 读取层负责校验与兜底）。开发者兜底路径：直接编辑这些 JSON 或替换 `public/` 下文件，提交后同样自动部署。
 
-### 2. 更新招新二维码
-- 微信群二维码通常具有 7 天有效期，过期前在微信重新生成群码，将方形图片覆盖到 `public/qr/wechat-group.jpg` 即可，页面与显影盘将自动更新。
-
-### 3. 更换背景音乐
-在 `src/config/site.ts` 中修改 `heroMusic` 导出值：
+### 更换背景音乐（需开发者）
+在 `src/content/hero.json` 中修改 `heroMusic` 值（或经 `site.ts` 兜底默认）：
 ```typescript
 // 切换为《Snowfall》（雪落）
 export const heroMusic: string | null = "/audio/snowfall.m4a";
